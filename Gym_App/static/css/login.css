@@ -1,7 +1,66 @@
-main{
+/* 1. Contenedor Principal: Centrado absoluto */
+main {
+    display: grid;
+    place-items: center; /* Simplifica flex-direction, align y justify en una sola línea */
+    flex: 1;
+}
+
+/* 2. Tarjeta de Login */
+#login-section {
+    background-color: var(--bg-dark-secondary);
+    padding: 4rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 90%; /* Mejor para móviles que el 100% */
+    max-width: 40rem;
+}
+
+/* 3. Estructura del Formulario (Labels e Inputs) */
+#login-section form p {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
+    margin-bottom: 2rem;
+}
+
+#login-section label {
+    font: 700 1.6rem var(--font-display); /* Shorthand: weight, size, family */
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+}
+
+#login-section input {
+    width: 100%;
+    padding: 1.2rem;
+    background: var(--bg-dark);
+    border: 1px solid var(--text-muted);
+    border-radius: 4px;
+    color: var(--text-hover);
+    font: 1.6rem var(--font-main);
+    box-sizing: border-box;
+    transition: 0.3s; /* Simplificado: afecta a todas las propiedades */
+}
+
+/* 4. Estados: Focus y Botón */
+#login-section input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+    box-shadow: 0 0 8px rgba(176, 228, 204, 0.3);
+}
+
+#login-button {
+    width: 100%; /* El botón ahora ocupa todo el ancho, más moderno */
+    margin-top: 1rem;
+    padding: 1.5rem;
+    font: 700 1.6rem var(--font-display);
+    background-color: var(--text-primary);
+    color: var(--bg-dark); /* Asumiendo que quieres contraste */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#login-button:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(176, 228, 204, 0.2);
 }

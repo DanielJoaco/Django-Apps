@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}<title>Dashboard - Gym App</title>{% endblock %}
+{% block title %}Dashboard - Gym App{% endblock %}
 
 {% block extra_head %} 
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 {% endblock %}
+
+{% block logo_title %}Dashboard{% endblock %}
 
 
 {% block content %}

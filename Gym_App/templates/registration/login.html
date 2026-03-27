@@ -9,12 +9,14 @@
 {% endblock %}
 
 {% block content %}
-<section>
+<section id="login-section">
     <h2>Acceso al Sistema</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Iniciar Sesión</button>
+        <div>
+        <button id="login-button" type="submit">Iniciar Sesión</button>
+        </div>
     </form>
 </section>
 {% endblock %}

@@ -94,3 +94,9 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# URL pública para acceder a los archivos multimedia subidos
+MEDIA_URL = '/media/'
+
+# Ruta absoluta en tu disco duro donde Django guardará físicamente los archivos
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

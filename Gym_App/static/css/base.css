@@ -1,9 +1,10 @@
 /* 1. DEFINICIÓN DE VARIABLES GLOBALES */
 :root {
     /* Paleta de Colores */
-    --bg-dark: #0d1117;
-    --text-primary: #B0E4CC;
-    --text-muted: #dee9e4;
+    --bg-dark: #010409;
+    --bg-dark-secondary: #0d1117;
+    --text-primary: #f0f6fc;
+    --text-muted: #656c76;
     --text-hover: #ffffff;
     --accent-glow: rgba(255, 255, 255, 0.75);
     
@@ -56,8 +57,38 @@ p {
 }
 
 /* 4. ENLACES Y NAVEGACIÓN */
+
+nav{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: var(--border-thin);
+
+}
+
+.nav-logo {
+    width: 4rem; 
+    height: 4rem;
+    padding: 0 0 0 3rem;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+/* Efecto opcional para que se vea pro al pasar el mouse */
+.nav-logo:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 5px var(--text-primary));
+}
+
+#logo-section{
+    display: flex;
+    gap: 1rem;
+    font-family: var(--font-display);
+}
+
 a {
-    color: var(--text-muted);
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 2rem;
     font-family: var(--font-display);
@@ -73,10 +104,10 @@ a:hover, a:focus-visible {
 
 #nav-list {
     display: flex;
-    padding: 2rem;
-    justify-content: space-between;
+    margin: 0;
+    padding: 1.5rem;
+    align-items: center;    
     list-style: none;
-    border-bottom: var(--border-thin);
 }
 
 #nav-list div {
@@ -98,8 +129,9 @@ button {
 
 #logout-button {
     color: var(--text-primary);
-    width: 12rem;
+    width: 13rem;
     font-size: 1.4rem;
+    padding-right: 2rem;
     transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
@@ -117,4 +149,8 @@ footer {
     padding: 2rem;
     border-top: var(--border-thin);
     font-size: 1.4rem;
+}
+
+footer p{
+    color: var(--text-muted);
 }
