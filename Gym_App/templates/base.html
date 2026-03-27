@@ -1,0 +1,46 @@
+    {% load static %}
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% block title %}<title>Gym App</title>{% endblock %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    {{ block.super }}
+        {% block extra_head %}{% endblock %}
+    </head>
+    <body>
+        {% if user.is_authenticated %}
+        <header>
+            <nav>
+                <ul id="nav-list">
+                    <div>
+                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li><a href="#">Rutinas</a></li>
+                    <li><a href="#">Registro de Series</a></li>
+                    <li><a href="#">Masa y Tallas</a></li>
+                    </div>
+                    
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button  id="logout-button" type="submit">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        {% endif %}
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Gym App. Creada por Daniel Joaco.</p>
+    </body>
+    </html>

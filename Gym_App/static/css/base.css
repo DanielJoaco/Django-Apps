@@ -1,0 +1,120 @@
+/* 1. DEFINICIÓN DE VARIABLES GLOBALES */
+:root {
+    /* Paleta de Colores */
+    --bg-dark: #0d1117;
+    --text-primary: #B0E4CC;
+    --text-muted: #dee9e4;
+    --text-hover: #ffffff;
+    --accent-glow: rgba(255, 255, 255, 0.75);
+    
+    /* Tipografías */
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Kanit', sans-serif; /* Para títulos y botones */
+    
+    /* Espaciado y Bordes */
+    --border-thin: 0.1rem solid var(--text-muted);
+}
+
+/* 2. RESET Y CONFIGURACIÓN BASE */
+html {
+    /* 62.5% hace que 1rem = 10px en la mayoría de navegadores */
+    font-size: 62.5%; 
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased; /* Mejora renderizado de fuentes */
+}
+
+main {
+    flex: 1;
+    background-color: var(--bg-dark);
+}
+
+/* 3. TIPOGRAFÍA Y TÍTULOS */
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+}
+
+h1 { font-size: 4.8rem; margin-bottom: 2rem; }
+h2 { font-size: 3.2rem; margin: 1rem 0; }
+
+p {
+    font-size: 2rem;
+    line-height: 1.6;
+    margin: 0.5rem 0;
+}
+
+/* 4. ENLACES Y NAVEGACIÓN */
+a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 2rem;
+    font-family: var(--font-display);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:hover, a:focus-visible {
+    color: var(--text-hover);
+    text-shadow: 
+        0 0 4px var(--accent-glow),
+        0 0 10px rgba(255, 255, 255, 0.55);
+}
+
+#nav-list {
+    display: flex;
+    padding: 2rem;
+    justify-content: space-between;
+    list-style: none;
+    border-bottom: var(--border-thin);
+}
+
+#nav-list div {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 4rem;
+}
+
+/* 5. COMPONENTES: BOTONES Y FORMULARIOS */
+button {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    background: none;
+}
+
+#logout-button {
+    color: var(--text-primary);
+    width: 12rem;
+    font-size: 1.4rem;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+#logout-button:hover,
+#logout-button:focus-visible {
+    color: var(--text-hover);
+    text-shadow: 
+        0 0 4px var(--accent-glow),
+        0 0 10px rgba(255, 255, 255, 0.55);
+}
+
+/* 6. PIE DE PÁGINA */
+footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: var(--border-thin);
+    font-size: 1.4rem;
+}

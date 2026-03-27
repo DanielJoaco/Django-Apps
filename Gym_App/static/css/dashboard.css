@@ -1,0 +1,10 @@
+#title-section{
+    display: flex;
+    justify-content: center;
+}
+
+#metrics-section{
+    display: flex;
+    flex-direction: column;
+    padding: 0 20rem 20rem 20rem;
+}

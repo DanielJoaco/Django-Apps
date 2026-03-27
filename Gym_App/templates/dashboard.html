@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}<title>Dashboard - Gym App</title>{% endblock %}
+
+{% block extra_head %} 
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<section>
+
+    <div id="title-section">
+        <h1>Dashboard Principal</h1>
+    </div>
+
+    <div id="metrics-section">
+        <h2>Resumen de Métricas</h2>
+        <p>Bienvenido al sistema, {{ user.username }}.</p>
+        <article>
+            <p>Aquí se visualizarán las estadísticas de tus levantamientos y mediciones.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}
