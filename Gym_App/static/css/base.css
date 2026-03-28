@@ -1,25 +1,47 @@
-/* 1. DEFINICIÓN DE VARIABLES GLOBALES */
+/* ==========================================================================
+   1. VARIABLES GLOBALES
+   ========================================================================== */
 :root {
     /* Paleta de Colores */
     --bg-dark: #010409;
     --bg-dark-secondary: #0d1117;
+    --bg-dark-rgb: 1, 4, 9;
+    --bg-light: #c9d1d9;
+    
+    --bg-red-warning: #312525;
+    --bg-red-warning-hover: #b62324;
+    --bg-green: #238636;
+    --bg-blue: #121d2f;
+
     --text-primary: #f0f6fc;
     --text-muted: #656c76;
+    --text-warning: #d84a3f;
+    --text-success: #238636; /* Corregido typo 'sucess' */
+    --text-link: #4493f8;
     --text-hover: #ffffff;
-    --accent-glow: rgba(255, 255, 255, 0.75);
+    --text-warning-hover: #f8debb;
     
+    --accent-glow: rgba(255, 255, 255, 0.75);
+    --accent-mint: #B0E4CC; /* Color para sombras y acentos */
+
     /* Tipografías */
     --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-display: 'Kanit', sans-serif; /* Para títulos y botones */
-    
-    /* Espaciado y Bordes */
+    --font-display: 'Kanit', sans-serif;
+
+    /* Bordes y Sombras */
     --border-thin: 0.1rem solid var(--text-muted);
+    --shadow-standard: 0 0.4rem 1.2rem rgba(176, 228, 204, 0.2);
 }
 
-/* 2. RESET Y CONFIGURACIÓN BASE */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. RESET Y CONFIGURACIÓN BASE
+   ========================================================================== */
 html {
-    /* 62.5% hace que 1rem = 10px en la mayoría de navegadores */
-    font-size: 62.5%; 
+    font-size: 62.5%; /* 1rem = 10px */
 }
 
 body {
@@ -30,61 +52,36 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    -webkit-font-smoothing: antialiased; /* Mejora renderizado de fuentes */
+    -webkit-font-smoothing: antialiased;
 }
 
 main {
     flex: 1;
-    background-color: var(--bg-dark);
+    background-color: var(--bg-dark-secondary);
+    width: 100%;
+    padding: 3rem;
 }
 
-/* 3. TIPOGRAFÍA Y TÍTULOS */
+/* ==========================================================================
+   3. TIPOGRAFÍA
+   ========================================================================== */
 h1, h2, h3 {
     font-family: var(--font-display);
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05rem;
     color: var(--text-primary);
+    margin: 0;
 }
 
 h1 { font-size: 4.8rem; margin-bottom: 2rem; }
-h2 { font-size: 3.2rem; margin: 1rem 0; }
+h2 { font-size: 3.2rem; margin-bottom: 1.5rem; }
+h3 { font-size: 2.4rem; }
 
-p {
+p, li {
     font-size: 2rem;
     line-height: 1.6;
     margin: 0.5rem 0;
-}
-
-/* 4. ENLACES Y NAVEGACIÓN */
-
-nav{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: var(--border-thin);
-
-}
-
-.nav-logo {
-    width: 4rem; 
-    height: 4rem;
-    padding: 0 0 0 3rem;
-    display: block;
-    transition: transform 0.3s ease;
-}
-
-/* Efecto opcional para que se vea pro al pasar el mouse */
-.nav-logo:hover {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 5px var(--text-primary));
-}
-
-#logo-section{
-    display: flex;
-    gap: 1rem;
-    font-family: var(--font-display);
 }
 
 a {
@@ -97,27 +94,54 @@ a {
 
 a:hover, a:focus-visible {
     color: var(--text-hover);
-    text-shadow: 
-        0 0 4px var(--accent-glow),
-        0 0 10px rgba(255, 255, 255, 0.55);
+    text-shadow: 0 0 0.4rem var(--accent-glow), 0 0 1rem rgba(255, 255, 255, 0.55);
+}
+
+/* ==========================================================================
+   4. NAVEGACIÓN
+   ========================================================================== */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: var(--border-thin);
+    padding: 0 3rem; /* Espaciado lateral */
+}
+
+.nav-logo {
+    width: 4rem;
+    height: 4rem;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.nav-logo:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 0.5rem var(--text-primary));
+}
+
+#logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 #nav-list {
     display: flex;
     margin: 0;
-    padding: 1.5rem;
-    align-items: center;    
+    padding: 1.5rem 0;
     list-style: none;
+    align-items: center;
 }
 
 #nav-list div {
     display: flex;
-    width: 100%;
-    justify-content: center;
     gap: 4rem;
 }
 
-/* 5. COMPONENTES: BOTONES Y FORMULARIOS */
+/* ==========================================================================
+   5. COMPONENTES: BOTONES
+   ========================================================================== */
 button {
     font-family: var(--font-display);
     font-weight: 700;
@@ -125,49 +149,67 @@ button {
     border: none;
     cursor: pointer;
     background: none;
+    transition: 0.3s ease;
+}
+
+/* Estilo Base para Botones Interactivos (Cards/Login) */
+.btn-base, .interactive-button, .warning-button, .success-button {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 1.5rem;
+    font-size: 1.6rem;
+    border-radius: 0.5rem;
+}
+
+.btn-base:hover, .interactive-button:hover, .warning-button:hover, .success-button:hover {
+    filter: brightness(1.1);
+    box-shadow: var(--shadow-standard);
 }
 
 .interactive-button {
-    width: 100%; /* El botón ahora ocupa todo el ancho, más moderno */
-    margin-top: 1rem;
-    padding: 1.5rem;
-    font: 700 1.6rem var(--font-display);
     background-color: var(--text-primary);
-    color: var(--bg-dark); /* Asumiendo que quieres contraste */
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: 0.3s;
+    color: var(--bg-dark);
 }
 
-.interactive-button:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(176, 228, 204, 0.2);
+.warning-button {
+    background-color: var(--bg-red-warning);
+    color: var(--text-warning);
 }
 
+.warning-button:hover {
+    background-color: var(--bg-red-warning-hover);
+    color: var(--text-warning-hover);
+}
+
+.success-button {
+    background-color: var(--bg-green);
+    color: var(--text-primary);
+}
+
+/* Botón de Logout (Estilo Link) */
 #logout-button {
     color: var(--text-primary);
-    width: 13rem;
-    font-size: 1.4rem;
-    padding-right: 2rem;
-    transition: color 0.2s ease, text-shadow 0.2s ease;
+    width: auto;
+    font-size: 1.8rem;
+    padding: 0 2rem;
 }
 
-#logout-button:hover,
-#logout-button:focus-visible {
+#logout-button:hover {
     color: var(--text-hover);
-    text-shadow: 
-        0 0 4px var(--accent-glow),
-        0 0 10px rgba(255, 255, 255, 0.55);
+    text-shadow: 0 0 0.4rem var(--accent-glow), 0 0 1rem rgba(255, 255, 255, 0.55);
 }
 
-/* 6. PIE DE PÁGINA */
+/* ==========================================================================
+   6. FOOTER
+   ========================================================================== */
 footer {
     text-align: center;
-    padding: 2rem;
+    padding: 2.5rem;
     border-top: var(--border-thin);
-    font-size: 1.4rem;
 }
 
-footer p{
+footer p {
+    font-size: 1.4rem;
     color: var(--text-muted);
+    margin: 0;
 }

@@ -1,31 +1,46 @@
-# workouts/admin.py
 from django.contrib import admin
-from .models import Category, Exercise, Routine, RoutineItem, WorkoutSession, CardioLog, ExerciseLog, SetRecord
+from .models import MovementPattern, MuscleGroup, Exercise, Routine, RoutineItem, WorkoutSession, CardioLog, ExerciseLog, SetRecord
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user')
+# ==============================================================================
+# TAXONOMÍA Y CATÁLOGO GLOBAL
+# ==============================================================================
+
+@admin.register(MovementPattern)
+class MovementPatternAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
     search_fields = ('name',)
-    list_filter = ('user',)
+
+@admin.register(MuscleGroup)
+class MuscleGroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'pattern')
+    list_filter = ('pattern',)
+    search_fields = ('name',)
 
 @admin.register(Exercise)
 class ExerciseAdmin(admin.ModelAdmin):
-    # Columnas visibles en la tabla principal
-    list_display = ('name', 'category', 'tracks_weight', 'is_active', 'user')
-    # Filtros laterales
-    list_filter = ('category', 'tracks_weight', 'is_active')
+    list_display = ('name', 'muscle_group', 'tracks_weight', 'is_active', 'created_by')
+    # Permite filtrar por patrón de movimiento a través de la relación de la llave foránea
+    list_filter = ('muscle_group__pattern', 'muscle_group', 'tracks_weight', 'is_active')
     search_fields = ('name',)
 
-# --- Configuración de Inlines para Relaciones 1:N ---
+# ==============================================================================
+# PLANTILLAS DE USUARIO
+# ==============================================================================
 
 class RoutineItemInline(admin.TabularInline):
     model = RoutineItem
-    extra = 1 # Muestra por defecto 1 fila vacía para agregar rápidamente
+    extra = 1
 
 @admin.register(Routine)
 class RoutineAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'created_at')
-    inlines = [RoutineItemInline] # Incrusta la tabla de items dentro de la rutina
+    list_display = ('name', 'user', 'is_public', 'created_at')
+    list_filter = ('is_public', 'user')
+    search_fields = ('name', 'user__username')
+    inlines = [RoutineItemInline]
+
+# ==============================================================================
+# DATOS TRANSACCIONALES
+# ==============================================================================
 
 class CardioLogInline(admin.TabularInline):
     model = CardioLog

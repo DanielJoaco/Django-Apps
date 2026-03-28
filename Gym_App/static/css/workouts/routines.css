@@ -1,62 +1,184 @@
-/* 1. Contenedor Principal */
-main {
+/* ==========================================================================
+   1. LAYOUT Y CONTENEDORES
+   ========================================================================== */
+main, 
+.routine-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
 }
 
-.routine-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-/* 2. Cuadrícula Base (Comportamiento por defecto: 3 o más ítems) */
 .routine-list {
     display: grid;
-    /* Crea 3 columnas de fracción igual (1/3 cada una) */
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    grid-auto-rows: 1fr; /* Mantiene todas las filas con la misma altura */
+    gap: 10rem;
     width: 100%;
-    max-width: 1200px; /* Evita que las tarjetas se estiren infinitamente en monitores ultra-anchos */
+    max-width: 120rem; 
     padding: 2rem;
-    list-style: none;
     box-sizing: border-box;
+    list-style: none;
 }
 
-/* ---------------------------------------------------------
-   LÓGICA ESTRUCTURAL (QUANTITY QUERIES)
-   --------------------------------------------------------- */
+/* ==========================================================================
+   2. COMPONENTE: ROUTINE ITEM (TARJETAS)
+   ========================================================================== */
+.routine-header{
+    display: flex;
+    justify-content: center;
+}
 
-/* CASO A: Exactamente 1 ítem en toda la lista */
-/* Si el primer hijo es simultáneamente el último hijo (solo hay 1) */
+.routine-item {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+    background-color: rgba(var(--bg-dark-rgb), 0.8);
+    padding: 3rem;
+    border-radius: 1rem;
+    box-sizing: border-box;
+    box-shadow: 0.1rem 0.1rem 1rem var(--text-muted);
+}
+
+.routine-item h2 {
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.routine-item ul {
+    flex-grow: 1; /* Empuja el botón o enlace hacia abajo */
+    margin-bottom: 2rem;
+    padding: 0;
+    list-style-position: inside;
+}
+
+/* ==========================================================================
+   3. LÓGICA ESTRUCTURAL (QUANTITY QUERIES)
+   ========================================================================== */
+
+/* Caso: 1 solo ítem -> Centrado en la columna 2 */
 .routine-list > .routine-item:first-child:nth-last-child(1) {
-    grid-column: 2; /* Lo posiciona forzosamente en la columna central (la 2 de 3) */
+    grid-column: 2;
 }
 
-/* CASO B: Exactamente 2 ítems en toda la lista */
-/* Si el contenedor .routine-list *tiene* un último hijo que es el número 2 */
+/* Caso: Exactamente 2 ítems -> Mitad y mitad */
 .routine-list:has(> .routine-item:last-child:nth-child(2)) {
-    /* Reescribe la regla del padre a 2 columnas iguales (mitad y mitad) */
     grid-template-columns: repeat(2, 1fr);
-    max-width: 800px; /* Ajuste estético opcional para que no queden exageradamente anchas */
+    max-width: 100rem;
     margin: 0 auto;
 }
 
-/* ---------------------------------------------------------
-   RESPONSIVIDAD (MÓVILES)
-   --------------------------------------------------------- */
+/* ==========================================================================
+   4. VENTANA MODAL
+   ========================================================================== */
+.custom-modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(0.5rem);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--bg-dark-secondary);
+    border: 0.1rem solid var(--text-muted);
+    border-radius: 0.8rem;
+    padding: 3rem;
+    width: 90%;
+    max-width: 60rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+    animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-2rem); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.close-button {
+    color: var(--text-muted);
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: var(--text-primary);
+}
+
+/* Lista interna del Modal */
+.modal-routine-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.modal-exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 0.1rem solid rgba(255, 255, 255, 0.1);
+}
+
+.exercise-image {
+    width: 8rem;
+    height: 8rem;
+    object-fit: cover;
+    border-radius: 0.4rem;
+    border: 0.1rem solid var(--text-primary);
+}
+
+.no-image-placeholder {
+    width: 8rem;
+    height: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.4rem;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.modal-actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* ==========================================================================
+   5. RESPONSIVIDAD (MÓVILES)
+   ========================================================================== */
 @media (max-width: 768px) {
-    /* En pantallas pequeñas, ignoramos la lógica de cantidad y apilamos todo a 1 columna */
     .routine-list,
     .routine-list:has(> .routine-item:last-child:nth-child(2)) {
         grid-template-columns: 1fr;
+        padding: 1rem;
     }
     
-    /* El ítem único vuelve a su columna normal */
     .routine-list > .routine-item:first-child:nth-last-child(1) {
         grid-column: 1;
+    }
+
+    .modal-content {
+        padding: 2rem;
+        width: 95%;
     }
 }
