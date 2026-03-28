@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users.views import dashboard_view
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +26,9 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     # La ruta raíz (/) invoca la vista del dashboard
     path('', dashboard_view, name='dashboard'),
+    path('workouts/', include('workouts.urls')),
 ]
+
+# Servir archivos multimedia únicamente en entorno de desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

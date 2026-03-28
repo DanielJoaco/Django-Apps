@@ -1,0 +1,62 @@
+/* 1. Contenedor Principal */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.routine-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* 2. Cuadrícula Base (Comportamiento por defecto: 3 o más ítems) */
+.routine-list {
+    display: grid;
+    /* Crea 3 columnas de fracción igual (1/3 cada una) */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px; /* Evita que las tarjetas se estiren infinitamente en monitores ultra-anchos */
+    padding: 2rem;
+    list-style: none;
+    box-sizing: border-box;
+}
+
+/* ---------------------------------------------------------
+   LÓGICA ESTRUCTURAL (QUANTITY QUERIES)
+   --------------------------------------------------------- */
+
+/* CASO A: Exactamente 1 ítem en toda la lista */
+/* Si el primer hijo es simultáneamente el último hijo (solo hay 1) */
+.routine-list > .routine-item:first-child:nth-last-child(1) {
+    grid-column: 2; /* Lo posiciona forzosamente en la columna central (la 2 de 3) */
+}
+
+/* CASO B: Exactamente 2 ítems en toda la lista */
+/* Si el contenedor .routine-list *tiene* un último hijo que es el número 2 */
+.routine-list:has(> .routine-item:last-child:nth-child(2)) {
+    /* Reescribe la regla del padre a 2 columnas iguales (mitad y mitad) */
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px; /* Ajuste estético opcional para que no queden exageradamente anchas */
+    margin: 0 auto;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVIDAD (MÓVILES)
+   --------------------------------------------------------- */
+@media (max-width: 768px) {
+    /* En pantallas pequeñas, ignoramos la lógica de cantidad y apilamos todo a 1 columna */
+    .routine-list,
+    .routine-list:has(> .routine-item:last-child:nth-child(2)) {
+        grid-template-columns: 1fr;
+    }
+    
+    /* El ítem único vuelve a su columna normal */
+    .routine-list > .routine-item:first-child:nth-last-child(1) {
+        grid-column: 1;
+    }
+}

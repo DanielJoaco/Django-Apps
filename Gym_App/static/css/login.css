@@ -47,20 +47,3 @@ main {
     border-color: var(--text-primary);
     box-shadow: 0 0 8px rgba(176, 228, 204, 0.3);
 }
-
-#login-button {
-    width: 100%; /* El botón ahora ocupa todo el ancho, más moderno */
-    margin-top: 1rem;
-    padding: 1.5rem;
-    font: 700 1.6rem var(--font-display);
-    background-color: var(--text-primary);
-    color: var(--bg-dark); /* Asumiendo que quieres contraste */
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-#login-button:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(176, 228, 204, 0.2);
-}

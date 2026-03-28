@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}<title>Login - Gym App</title>{% endblock %}
+{% block title %}Login - Gym App{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +15,9 @@
         {% csrf_token %}
         {{ form.as_p }}
         <div>
-        <button id="login-button" type="submit">Iniciar Sesión</button>
+       <div>
+            <button class="interactive-button" type="submit">Iniciar Sesión</button>
+        </div>
         </div>
     </form>
 </section>

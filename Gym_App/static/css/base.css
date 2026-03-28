@@ -127,6 +127,23 @@ button {
     background: none;
 }
 
+.interactive-button {
+    width: 100%; /* El botón ahora ocupa todo el ancho, más moderno */
+    margin-top: 1rem;
+    padding: 1.5rem;
+    font: 700 1.6rem var(--font-display);
+    background-color: var(--text-primary);
+    color: var(--bg-dark); /* Asumiendo que quieres contraste */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.interactive-button:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(176, 228, 204, 0.2);
+}
+
 #logout-button {
     color: var(--text-primary);
     width: 13rem;

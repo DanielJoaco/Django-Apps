@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+
+{% block title %}Rutinas - Gym App{% endblock %}
+
+
+
+{% block extra_head %}
+
+{{ block.super }}
+
+<link rel="stylesheet" href="{% static 'css/workouts/routines.css' %}">
+
+{% endblock %}
+
+
+
+{% block content %}
+
+    <section class="routine-container">
+
+        <h1>Rutinas Disponibles</h1>
+
+        {% if routines %}
+
+            <ul class="routine-list">
+
+                {% for routine in routines %}
+
+                    <li class="routine-item">
+
+                        <h2>{{ routine.name }}</h2>
+
+                        <p>Ejercicios: </p>
+
+                        <ul>
+                            {% for item in routine.items.all %}
+                                <li>{{ item.exercise.name }} ({{ item.exercise.category.name }}) - {{ item.recommended_sets }}x{{ item.recommended_reps }}</li>
+                            {% empty %}
+                                <li>No hay ejercicios asignados a esta rutina.</li>
+                            {% endfor %}
+                        </ul>
+
+
+
+                        {# <a href="{% url 'workouts:view_routine' routine.id %}">Ver Detalles</a> #}
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p>No hay rutinas creadas aún. ¡Crea la tuya ahora!</p>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <section class="create-routine-button-container">
+
+        <button class="interactive-button" onclick="window.location.href='{% url 'workouts:create_routine' %}'">
+
+            + Crear Nueva Rutina
+
+        </button>
+
+    </section>
+
+
+
+{% endblock %}
