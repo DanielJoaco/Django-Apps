@@ -1,10 +1,66 @@
-#title-section{
+/* ==========================================================================
+   1. LAYOUT PRINCIPAL (DASHBOARD)
+   ========================================================================== */
+.dashboard-container {
     display: flex;
-    justify-content: center;
+    gap: 5rem;
+    width: 100%;
+    margin-top: 2rem;
+    box-sizing: border-box;
 }
 
-#metrics-section{
+/* ==========================================================================
+   2. COLUMNAS ESTRUCTURALES
+   ========================================================================== */
+/* Columna Izquierda: Lista de rutinas */
+.list-of-routines {
+    width: 22%;
+    /* flex-shrink: 0; Recomendado si no quieres que se aplaste */
+}
+
+/* Columna Central: Resumen/Log */
+.resume-exercises-log {
+    width: 56%;
+}
+
+/* Columna Derecha: Acciones */
+.dashboard-actions {
     display: flex;
     flex-direction: column;
-    padding: 0 20rem 20rem 20rem;
+    align-items: center;
+    gap: 2rem;
+    width: 22%;
+    padding: 2rem;
+    background-color: var(--bg-blue);
+    border: 0.1rem solid var(--text-muted);
+    border-radius: 2rem;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   3. COMPONENTES INTERNOS (LISTAS Y ENLACES)
+   ========================================================================== */
+.links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.routine-list {
+    padding: 0;
+    margin: 0; /* Buena práctica para limpiar márgenes por defecto del <ul> */
+}
+
+.routine-item {
+    display: flex;
+    align-items: center;
+    list-style: none;
+}
+
+/* ==========================================================================
+   4. TIPOGRAFÍA
+   ========================================================================== */
+.title-header h3 {
+    font-size: 2.6rem;
 }

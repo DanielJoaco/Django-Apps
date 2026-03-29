@@ -1,0 +1,66 @@
+/* ==========================================================================
+   1. ESTRUCTURAS DE LISTAS INTERNAS
+   ========================================================================== */
+.modal-routine-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.modal-exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 0.1rem solid rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   2. TRATAMIENTO DE IMÁGENES
+   ========================================================================== */
+.exercise-image {
+    width: 8rem;
+    height: 8rem;
+    object-fit: cover; /* Evita deformación de la relación de aspecto */
+    border-radius: 0.4rem;
+    border: 0.1rem solid var(--text-primary);
+}
+
+.no-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 8rem;
+    height: 8rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.4rem;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* ==========================================================================
+   3. ACCIONES Y BOTONES
+   ========================================================================== */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.confirm-yes-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+}
+
+/* ==========================================================================
+   4. RESPONSIVIDAD DEL MODAL
+   ========================================================================== */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 2rem;
+        width: 95%;
+    }
+}

@@ -1,0 +1,59 @@
+<div id="modal-{{ routine.id }}" class="custom-modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('modal-{{ routine.id }}')">&times;</span>
+
+        <div class="title-header">
+            <h2>Detalle: {{ routine.name }}</h2>
+        </div>
+
+        <ul class="modal-routine-list">
+            {% for item in routine.items.all %}
+                <li class="modal-exercise-item">
+                    <div class="exercise-info">
+                        <strong>• {{ item.exercise.name }}</strong> ({{ item.exercise.muscle_group.name }})
+                        <br>&nbsp;&nbsp;&nbsp;Recomendado: {{ item.recommended_sets }} Series x {{ item.recommended_reps }} Reps
+                    </div>
+                    {% if item.exercise.image %}
+                        <img src="{{ item.exercise.image.url }}" alt="{{ item.exercise.name }}" class="exercise-image">
+                    {% else %}
+                        <div class="no-image-placeholder">Sin imagen</div>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>No hay ejercicios asignados a esta rutina.</li>
+            {% endfor %}
+            <div class="modal-actions">
+                <button class="success-button" onclick="window.location.href='{% url 'workouts:edit_routine' routine.id %}'">
+                    Editar Rutina
+                </button>
+                <button class="warning-button" onclick="openDeleteConfirmModal('confirm-delete-{{ routine.id }}', 'modal-{{ routine.id }}')">
+                    Eliminar Rutina
+                </button>
+            </div>
+        </ul>
+    </div>
+</div>
+
+<div id="confirm-delete-{{ routine.id }}" class="custom-modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeDeleteConfirmModal('confirm-delete-{{ routine.id }}')">&times;</span>
+
+        <div class="title-header">
+            <h2>Confirmar Eliminacion</h2>
+        </div>
+
+        <p>¿Esta seguro de eliminar la rutina ({{ routine.name }})?</p>
+
+        <div class="modal-actions">
+            <button
+                class="warning-button confirm-yes-button"
+                data-delete-url="{% url 'workouts:delete_routine' routine.id %}"
+                onclick="confirmDeleteRoutine(this)">
+                Si (3)
+            </button>
+            <button class="interactive-button" onclick="closeDeleteConfirmModal('confirm-delete-{{ routine.id }}')">
+                No
+            </button>
+        </div>
+    </div>
+</div>

@@ -21,5 +21,6 @@ class ExerciseAsyncForm(forms.ModelForm):
         widgets = {
             'muscle_group': forms.Select(attrs={'class': 'form-select'}),
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del ejercicio'}),
+            'image': forms.FileInput(attrs={'class': 'custom-file-input'}),
             'tracks_weight': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }

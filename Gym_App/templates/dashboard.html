@@ -12,18 +12,74 @@
 
 
 {% block content %}
-<section>
+<section class="dashboard-container">
 
-    <div id="title-section">
-        <h1>Dashboard Principal</h1>
-    </div>
+    <article class="list-of-routines dashboard-actions">
+        <div class="title-header">
+            <h3>Mis Rutinas</h3>
+        </div>
 
-    <div id="metrics-section">
-        <h2>Resumen de Métricas</h2>
-        <p>Bienvenido al sistema, {{ user.first_name }}.</p>
-        <article>
-            <p>Aquí se visualizarán las estadísticas de tus levantamientos y mediciones.</p>
-        </article>
-    </div>
+        <div class="links-container">
+            {% if routines %}
+                <ul class="routine-list">
+                    {% for routine in routines %}
+                        <li class="routine-item">
+                            <a class="a-link" onclick="openModal('modal-{{ routine.id }}')">• {{ routine.name }}</a>
+                            {% include 'workouts/modal_view_routine.html' %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay rutinas creadas aún. ¡Crea la tuya ahora!</p>
+            {% endif %}
+        </div>
+    </article>
+
+    <article class="resume-exercises-log">
+        <div class="title-header">
+            <h3>Resumen de Ejercicios Recientes</h3>
+        </div>
+
+        {% if recent_exercises %}
+            <ul class="exercise-log-list">
+                {% for log in recent_exercises %}
+                    <li class="exercise-log-item">
+                        <strong>{{ log.exercise.name }}</strong> - {{ log.date|date:"d M Y" }}
+                        <br>
+                        Series: {{ log.sets }} | Reps: {{ log.reps }} | Peso: {{ log.weight }} kg
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aún no has registrado ningún ejercicio. ¡Empieza a registrar tus entrenamientos para verlos aquí!</p>
+        {% endif %}
+    </article>
+
+    <nav class="dashboard-actions">
+        
+        <div class="title-header">
+        <h3>Acciones Rápidas</h3>
+        </div>
+
+        <div class="links-container">
+            <a class="a-link" onclick="window.location.href='{% url 'workouts:create_routine' %}'">
+                • Crear Nueva Rutina
+            </a>
+            <a class="a-link" onclick="window.location.href='{% url 'workouts:routines' %}'">
+                • Ver Todas las Rutinas
+            </a>
+            <a class="a-link" >
+                • Ver Mi Diario de Ejercicios
+            </a>
+            <a class="a-link"  >
+                • Iniciar Sesión de Entrenamiento
+            </a>
+        </div>
+
+    </nav>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/workouts/modal_view_routine.js' %}"></script>
 {% endblock %}

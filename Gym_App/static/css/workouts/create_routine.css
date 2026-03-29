@@ -1,0 +1,203 @@
+/* ==========================================================================
+   1. LAYOUT PRINCIPAL Y CONTENEDORES
+   ========================================================================== */
+.routine-container {
+    background-color: rgba(var(--bg-dark-rgb), 0.8);
+    padding: 3rem;
+    border-radius: 1rem;
+    box-sizing: border-box;
+    box-shadow: 0.1rem 0.1rem 1rem var(--text-muted);
+    width: 80%;
+    margin: 0 auto; /* Centrado horizontal */
+    align-items: stretch;
+}
+
+.title-header {
+    margin-bottom: 3rem;
+}
+
+.section-divider {
+    margin: 2rem 0;
+    border: none;
+    border-top: 0.1rem solid rgba(255, 255, 255, 0.1);
+}
+
+.selected-exercises {
+    margin-top: 2rem;
+}
+
+.unstyled-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ==========================================================================
+   2. FORMULARIOS Y ELEMENTOS COMUNES
+   ========================================================================== */
+.form-group {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0; /* Ajustado el padding para no desalinear horizontalmente */
+    margin-bottom: 0.5rem;
+}
+
+.form-control{
+    flex: 1;
+    max-width: 80rem;
+}
+
+.form-group-inline {
+    display: flex;
+    align-items: center;    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.checkbox-container {
+    margin-bottom: 2rem;
+}
+
+.form-check-input{
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+}
+
+.label-light {
+    font-size: 1.4rem;
+    color: var(--text-success);
+    text-transform: none; /* Elimina el uppercase de etiquetas base si lo hubiera */
+}
+
+.text-instruction {
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   3. BOTONES Y ACCIONES
+   ========================================================================== */
+.search-input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+#exercise-search{
+    flex: 1;
+}
+
+#btn-new-exercise {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40%;
+    max-width: 16rem;
+    font-size: 1rem;
+    padding: 1rem;
+    margin: 0;
+}
+
+.btn-save-routine {
+    margin-top: 3rem;
+}
+
+.modal-actions-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+#routine-items-list{
+    border: 0.1rem solid var(--text-muted);
+    border-radius: 1rem;
+}
+
+.routine-add-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+/* ==========================================================================
+   4. COMPONENTE: INPUT DE ARCHIVO (FILE SELECTOR)
+   ========================================================================== */
+.custom-file-input {
+    width: 100%;
+    color: var(--text-muted); 
+    font-family: var(--font-main);
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.custom-file-input::file-selector-button {
+    padding: 1rem 2rem;
+    margin-right: 1.5rem;
+    font: 700 1.4rem var(--font-display);
+    text-transform: uppercase;
+    background-color: var(--text-primary);
+    color: var(--bg-dark);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-file-input::file-selector-button:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0.4rem 1.2rem rgba(176, 228, 204, 0.2);
+}
+
+/* ==========================================================================
+   5. COMPONENTE: BUSCADOR ASÍNCRONO FLOTANTE
+   ========================================================================== */
+.search-box {
+    position: relative; 
+    width: 100%;
+}
+
+#search-results {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: 100%;
+    background-color: rgba(13, 17, 23, 0.85); 
+    backdrop-filter: blur(0.8rem); 
+    border: 0.1rem solid var(--text-muted);
+    border-radius: 0.5rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.7);
+    z-index: 1000; 
+    max-height: 25rem; 
+    overflow-y: auto; 
+    display: none; 
+}
+
+.search-item {
+    padding: 1.2rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 0.1rem solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item p {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+}
+
+.search-item:hover {
+    background-color: rgba(255, 255, 255, 0.1); 
+}
+
+.div-btn-success{
+    max-width: 30rem;
+    margin: 0 auto;
+}

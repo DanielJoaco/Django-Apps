@@ -12,7 +12,7 @@ main,
 .routine-list {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 1fr; /* Mantiene todas las filas con la misma altura */
+    grid-auto-rows: 1fr; /* Simetría vertical obligatoria en todas las filas */
     gap: 10rem;
     width: 100%;
     max-width: 120rem; 
@@ -22,13 +22,8 @@ main,
 }
 
 /* ==========================================================================
-   2. COMPONENTE: ROUTINE ITEM (TARJETAS)
+   2. COMPONENTE: ROUTINE ITEM (TARJETA)
    ========================================================================== */
-.routine-header{
-    display: flex;
-    justify-content: center;
-}
-
 .routine-item {
     display: flex;
     flex-direction: column;
@@ -47,7 +42,7 @@ main,
 }
 
 .routine-item ul {
-    flex-grow: 1; /* Empuja el botón o enlace hacia abajo */
+    flex-grow: 1; /* Distribución dinámica de espacio interno */
     margin-bottom: 2rem;
     padding: 0;
     list-style-position: inside;
@@ -56,7 +51,6 @@ main,
 /* ==========================================================================
    3. LÓGICA ESTRUCTURAL (QUANTITY QUERIES)
    ========================================================================== */
-
 /* Caso: 1 solo ítem -> Centrado en la columna 2 */
 .routine-list > .routine-item:first-child:nth-last-child(1) {
     grid-column: 2;
@@ -70,103 +64,10 @@ main,
 }
 
 /* ==========================================================================
-   4. VENTANA MODAL
-   ========================================================================== */
-.custom-modal {
-    display: none; 
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(0.5rem);
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: var(--bg-dark-secondary);
-    border: 0.1rem solid var(--text-muted);
-    border-radius: 0.8rem;
-    padding: 3rem;
-    width: 90%;
-    max-width: 60rem;
-    max-height: 85vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
-    animation: modalFadeIn 0.3s ease-out forwards;
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-2rem); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.close-button {
-    color: var(--text-muted);
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
-    font-size: 3rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.close-button:hover {
-    color: var(--text-primary);
-}
-
-/* Lista interna del Modal */
-.modal-routine-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 2rem;
-}
-
-.modal-exercise-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 0;
-    border-bottom: 0.1rem solid rgba(255, 255, 255, 0.1);
-}
-
-.exercise-image {
-    width: 8rem;
-    height: 8rem;
-    object-fit: cover;
-    border-radius: 0.4rem;
-    border: 0.1rem solid var(--text-primary);
-}
-
-.no-image-placeholder {
-    width: 8rem;
-    height: 8rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 0.4rem;
-    font-size: 1.2rem;
-    color: var(--text-muted);
-    text-align: center;
-}
-
-.modal-actions{
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-/* ==========================================================================
-   5. RESPONSIVIDAD (MÓVILES)
+   4. RESPONSIVIDAD (MÓVILES)
    ========================================================================== */
 @media (max-width: 768px) {
+    /* Destruye el grid fraccionario para apilar en dispositivos móviles */
     .routine-list,
     .routine-list:has(> .routine-item:last-child:nth-child(2)) {
         grid-template-columns: 1fr;
@@ -175,10 +76,5 @@ main,
     
     .routine-list > .routine-item:first-child:nth-last-child(1) {
         grid-column: 1;
-    }
-
-    .modal-content {
-        padding: 2rem;
-        width: 95%;
     }
 }

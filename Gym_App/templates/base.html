@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Gym App{% endblock %}</title>
-    
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <title>{% block title %}Gym App{% endblock %}</title>   
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/workouts/modal_view_routine.css' %}">
     
     {% block extra_head %}{% endblock %}
 </head>
@@ -35,10 +36,10 @@
 
             <ul id="nav-list">
                 <div class="nav-links">
-                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                    <li><a href="{% url 'workouts:routines' %}">Rutinas</a></li>
-                    <li><a href="#">Registros</a></li>
-                    <li><a href="#">Masa</a></li>
+                    <li><a id="dashboard-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li><a id="routines-link" href="{% url 'workouts:routines' %}">Rutinas</a></li>
+                    <li><a id="records-link" href="#">Registros</a></li>
+                    <li><a id="weight-link" href="#">Masa</a></li>
                     <li>
                         
                     </li>
@@ -59,5 +60,9 @@
     <footer>
         <p>&copy; 2026 Gym App. Creada por Daniel Joaco.</p>
     </footer>
+
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+
 </body>
 </html>

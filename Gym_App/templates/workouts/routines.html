@@ -13,13 +13,17 @@
 {% block content %}
     <section class="routine-container">
         
-        <h1>Rutinas Disponibles</h1>
+        <div class="title-header">
+            <h1>Mis Rutinas</h1>
+        </div>
+
+        
 
         {% if routines %}
             <ul class="routine-list">
                 {% for routine in routines %}
                     <li class="routine-item">
-                        <div class="routine-header">
+                        <div class="title-header">
                             <h2>{{ routine.name }}</h2>
                         </div>
                         <p>Ejercicios: </p>
@@ -35,42 +39,7 @@
                             Ver Detalles
                         </button>
 
-                        <div id="modal-{{ routine.id }}" class="custom-modal">
-                            <div class="modal-content">
-                                <span class="close-button" onclick="closeModal('modal-{{ routine.id }}')">&times;</span>
-                                
-                                <div class="routine-header">
-                                <h2>Detalle: {{ routine.name }}</h2>
-                                </div>
-                                
-                                <ul class="modal-routine-list">
-                                    {% for item in routine.items.all %}
-                                        <li class="modal-exercise-item">
-                                            <div class="exercise-info">
-                                                <strong>• {{ item.exercise.name }}</strong> ({{ item.exercise.category.name }})
-                                                <br>&nbsp;&nbsp;&nbsp;Recomendado: {{ item.recommended_sets }} Series x {{ item.recommended_reps }} Reps
-                                            </div>
-                                            {% if item.exercise.image %}
-                                                <img src="{{ item.exercise.image.url }}" alt="{{ item.exercise.name }}" class="exercise-image">
-                                            {% else %}
-                                                <div class="no-image-placeholder">Sin imagen</div>
-                                            {% endif %}
-                                        </li>
-                                    {% empty %}
-                                        <li>No hay ejercicios asignados a esta rutina.</li>
-                                    {% endfor %}
-                                    <div class="modal-actions">
-                                        <button class="success-button">
-                                            Editar Rutina
-                                        </button>
-                                        <button class="warning-button">
-                                            Eliminar Rutina
-                                        </button>
-                                    </div>
-                                </ul>
-                            </div>
-
-                        </div>
+                        {% include 'workouts/modal_view_routine.html' %}
                     </li>
                 {% endfor %}
             </ul>
@@ -84,6 +53,8 @@
             Crear Nueva Rutina
         </button>
     </section>
+{% endblock %}
 
+{% block extra_scripts %}
     <script src="{% static 'js/workouts/modal_view_routine.js' %}"></script>
 {% endblock %}

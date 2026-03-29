@@ -72,16 +72,24 @@ h1, h2, h3 {
     letter-spacing: 0.05rem;
     color: var(--text-primary);
     margin: 0;
+    text-align: center;
 }
 
-h1 { font-size: 4.8rem; margin-bottom: 2rem; }
-h2 { font-size: 3.2rem; margin-bottom: 1.5rem; }
+h1 { font-size: 4.8rem;}
+h2 { font-size: 3.2rem;}
 h3 { font-size: 2.4rem; }
 
 p, li {
     font-size: 2rem;
     line-height: 1.6;
     margin: 0.5rem 0;
+}
+
+label, input, select {
+    font-size: 1.6rem;
+    font-family: var(--font-main);
+    border-radius: 1rem;
+    padding: 0.3rem;
 }
 
 a {
@@ -95,6 +103,13 @@ a {
 a:hover, a:focus-visible {
     color: var(--text-hover);
     text-shadow: 0 0 0.4rem var(--accent-glow), 0 0 1rem rgba(255, 255, 255, 0.55);
+}
+
+#nav-list a.nav-link-active {
+    color: var(--text-hover);
+    text-shadow: none;
+    border-bottom: 0.2rem solid var(--accent-mint);
+    padding-bottom: 0.4rem;
 }
 
 /* ==========================================================================
@@ -137,6 +152,18 @@ nav {
 #nav-list div {
     display: flex;
     gap: 4rem;
+}
+
+.a-link{
+    font-size: 1.6rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.a-link:hover, .a-link:focus-visible {
+    color: var(--text-link);
+    text-shadow: none;
+    text-decoration: underline;
 }
 
 /* ==========================================================================
@@ -197,6 +224,65 @@ button {
 #logout-button:hover {
     color: var(--text-hover);
     text-shadow: 0 0 0.4rem var(--accent-glow), 0 0 1rem rgba(255, 255, 255, 0.55);
+}
+
+.title-header{
+    display: flex;
+    justify-content: center;
+}
+
+.custom-modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(0.5rem);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--bg-dark-secondary);
+    border: 0.1rem solid var(--text-muted);
+    border-radius: 0.8rem;
+    padding: 3rem;
+    width: 90%;
+    max-width: 60rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+    animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-2rem); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.text-instruction{
+    font-size: 1.4rem; 
+    color: var(--text-muted); 
+    margin-bottom: 2rem;
+}
+
+.close-button {
+    color: var(--text-muted);
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: var(--text-primary);
 }
 
 /* ==========================================================================
