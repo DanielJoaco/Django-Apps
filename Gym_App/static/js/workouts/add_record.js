@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const routinesDataNode = document.getElementById("routines-data");
 
   const exercisesDataNode = document.getElementById("exercises-data");
+  const cardioExercisesDataNode = document.getElementById(
+    "cardio-exercises-data",
+  );
+  const stretchingExercisesDataNode = document.getElementById(
+    "stretching-exercises-data",
+  );
 
   const routineSelect = document.getElementById("id_routine_template");
 
@@ -43,6 +49,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const confirmSaveNoButton = document.getElementById("confirm-save-no");
 
+  const warmupEnabledToggle = document.getElementById("warmup-enabled");
+  const warmupIncludeCardioToggle = document.getElementById(
+    "warmup-include-cardio",
+  );
+  const warmupIncludeStretchingToggle = document.getElementById(
+    "warmup-include-stretching",
+  );
+  const warmupFields = document.getElementById("warmup-phase-fields");
+  const warmupCardioBlock = document.getElementById("warmup-cardio-block");
+  const warmupStretchingBlock = document.getElementById(
+    "warmup-stretching-block",
+  );
+  const warmupCardioList = document.getElementById("warmup-cardio-list");
+  const warmupStretchingList = document.getElementById(
+    "warmup-stretching-list",
+  );
+  const warmupWarning = document.getElementById("warmup-warning");
+  const warmupHiddenInput = document.getElementById("warmup_details_json");
+
+  const cooldownEnabledToggle = document.getElementById("cooldown-enabled");
+  const cooldownIncludeCardioToggle = document.getElementById(
+    "cooldown-include-cardio",
+  );
+  const cooldownIncludeStretchingToggle = document.getElementById(
+    "cooldown-include-stretching",
+  );
+  const cooldownFields = document.getElementById("cooldown-phase-fields");
+  const cooldownCardioBlock = document.getElementById("cooldown-cardio-block");
+  const cooldownStretchingBlock = document.getElementById(
+    "cooldown-stretching-block",
+  );
+  const cooldownCardioList = document.getElementById("cooldown-cardio-list");
+  const cooldownStretchingList = document.getElementById(
+    "cooldown-stretching-list",
+  );
+  const cooldownWarning = document.getElementById("cooldown-warning");
+  const cooldownHiddenInput = document.getElementById("cooldown_details_json");
+
   if (
     !routinesDataNode ||
     !exercisesDataNode ||
@@ -55,6 +99,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const routines = JSON.parse(routinesDataNode.textContent);
 
   const exercises = JSON.parse(exercisesDataNode.textContent);
+  const cardioExercises = cardioExercisesDataNode
+    ? JSON.parse(cardioExercisesDataNode.textContent)
+    : [];
+  const stretchingExercises = stretchingExercisesDataNode
+    ? JSON.parse(stretchingExercisesDataNode.textContent)
+    : [];
 
   const routineById = new Map(
     routines.map((routine) => [String(routine.id), routine]),
@@ -71,6 +121,75 @@ document.addEventListener("DOMContentLoaded", () => {
   let saveCountdownTimer = null;
 
   let allowFormSubmit = false;
+
+  const buildInitialPhaseState = () => ({
+    enabled: false,
+    includeCardio: false,
+    includeStretching: false,
+    cardioEntries: new Map(
+      cardioExercises.map((exercise) => [
+        String(exercise.id),
+        {
+          exercise_id: exercise.id,
+          duration_mmss: "",
+          unit: "km",
+          distance_value: "",
+        },
+      ]),
+    ),
+    selectedCardioIds: new Set(),
+    fullBodyEntries: new Map(
+      stretchingExercises.map((exercise) => [
+        String(exercise.id),
+        {
+          exercise_id: exercise.id,
+          tracking_mode: "NONE",
+          duration_mmss: "",
+          sets_done: "",
+          reps_done: "",
+        },
+      ]),
+    ),
+    selectedFullBodyIds: new Set(),
+  });
+
+  const phaseConfigs = {
+    warmup: {
+      label: "calentamiento",
+      toggles: {
+        enabled: warmupEnabledToggle,
+        cardio: warmupIncludeCardioToggle,
+        stretching: warmupIncludeStretchingToggle,
+      },
+      fields: warmupFields,
+      cardioBlock: warmupCardioBlock,
+      stretchingBlock: warmupStretchingBlock,
+      cardioList: warmupCardioList,
+      stretchingList: warmupStretchingList,
+      warning: warmupWarning,
+      hiddenInput: warmupHiddenInput,
+    },
+    cooldown: {
+      label: "cardio final",
+      toggles: {
+        enabled: cooldownEnabledToggle,
+        cardio: cooldownIncludeCardioToggle,
+        stretching: cooldownIncludeStretchingToggle,
+      },
+      fields: cooldownFields,
+      cardioBlock: cooldownCardioBlock,
+      stretchingBlock: cooldownStretchingBlock,
+      cardioList: cooldownCardioList,
+      stretchingList: cooldownStretchingList,
+      warning: cooldownWarning,
+      hiddenInput: cooldownHiddenInput,
+    },
+  };
+
+  const phaseStates = {
+    warmup: buildInitialPhaseState(),
+    cooldown: buildInitialPhaseState(),
+  };
 
   const setEndTimeToNow = () => {
     if (
@@ -223,6 +342,644 @@ document.addEventListener("DOMContentLoaded", () => {
     return hour24 * 60 + minute;
   };
 
+  const parseMmSsToSeconds = (value) => {
+    const match = String(value || "")
+      .trim()
+      .match(/^(\d+):([0-5]\d)$/);
+    if (!match) {
+      return null;
+    }
+
+    const minutes = Number(match[1]);
+    const seconds = Number(match[2]);
+    if (!Number.isInteger(minutes) || minutes < 0) {
+      return null;
+    }
+
+    const totalSeconds = minutes * 60 + seconds;
+    return totalSeconds > 0 ? totalSeconds : null;
+  };
+
+  const serializePhaseState = (phaseKey) => {
+    const phaseState = phaseStates[phaseKey];
+    if (!phaseState) {
+      return {};
+    }
+
+    const selectedCardioEntries = [];
+    phaseState.selectedCardioIds.forEach((exerciseId) => {
+      const entry = phaseState.cardioEntries.get(String(exerciseId));
+      if (entry) {
+        selectedCardioEntries.push({
+          exercise_id: entry.exercise_id,
+          duration_mmss: entry.duration_mmss,
+          unit: entry.unit,
+          distance_value: entry.distance_value,
+        });
+      }
+    });
+
+    const selectedFullBodyEntries = [];
+    phaseState.selectedFullBodyIds.forEach((exerciseId) => {
+      const entry = phaseState.fullBodyEntries.get(String(exerciseId));
+      if (entry) {
+        selectedFullBodyEntries.push({
+          exercise_id: entry.exercise_id,
+          tracking_mode: entry.tracking_mode,
+          duration_mmss: entry.duration_mmss,
+          sets_done: entry.sets_done,
+          reps_done: entry.reps_done,
+        });
+      }
+    });
+
+    return {
+      enabled: phaseState.enabled,
+      include_cardio: phaseState.includeCardio,
+      include_stretching: phaseState.includeStretching,
+      cardio_entries: selectedCardioEntries,
+      full_body_entries: selectedFullBodyEntries,
+    };
+  };
+
+  const syncPhaseHiddenInput = (phaseKey) => {
+    const config = phaseConfigs[phaseKey];
+    if (!config?.hiddenInput) {
+      return;
+    }
+    config.hiddenInput.value = JSON.stringify(serializePhaseState(phaseKey));
+  };
+
+  const getPhaseValidationError = (phaseKey) => {
+    const phaseState = phaseStates[phaseKey];
+    const config = phaseConfigs[phaseKey];
+    if (!phaseState || !config) {
+      return null;
+    }
+
+    if (!phaseState.enabled) {
+      return null;
+    }
+
+    if (!phaseState.includeCardio && !phaseState.includeStretching) {
+      return `Debes elegir cardio o estiramiento en ${config.label}.`;
+    }
+
+    if (phaseState.includeCardio) {
+      const selectedCardioEntries = Array.from(phaseState.selectedCardioIds)
+        .map((exerciseId) => phaseState.cardioEntries.get(String(exerciseId)))
+        .filter(Boolean);
+
+      if (selectedCardioEntries.length === 0) {
+        return `Debes seleccionar al menos un ejercicio de cardio en ${config.label}.`;
+      }
+
+      for (const cardioEntry of selectedCardioEntries) {
+        const durationSeconds = parseMmSsToSeconds(cardioEntry.duration_mmss);
+        const distanceValue = Number(cardioEntry.distance_value);
+
+        if (cardioEntry.unit !== "steps" && cardioEntry.unit !== "km") {
+          return `La unidad de cardio en ${config.label} debe ser pasos o km.`;
+        }
+
+        if (!durationSeconds) {
+          return `Debes ingresar tiempo valido (mm:ss) para cardio en ${config.label}.`;
+        }
+
+        if (!Number.isFinite(distanceValue) || distanceValue <= 0) {
+          return `Debes ingresar distancia valida para cardio en ${config.label}.`;
+        }
+      }
+    }
+
+    if (
+      phaseState.includeStretching &&
+      phaseState.selectedFullBodyIds.size === 0
+    ) {
+      return `Debes seleccionar al menos un ejercicio de estiramiento en ${config.label}.`;
+    }
+
+    if (phaseState.includeStretching) {
+      const selectedFullBodyEntries = Array.from(phaseState.selectedFullBodyIds)
+        .map((exerciseId) => phaseState.fullBodyEntries.get(String(exerciseId)))
+        .filter(Boolean);
+
+      for (const entry of selectedFullBodyEntries) {
+        if (!["NONE", "TIME", "SETS_REPS"].includes(entry.tracking_mode)) {
+          return `Modo de registro invalido en ${config.label}.`;
+        }
+
+        if (entry.tracking_mode === "TIME") {
+          const durationSeconds = parseMmSsToSeconds(entry.duration_mmss);
+          if (!durationSeconds) {
+            return `Debes ingresar tiempo valido (mm:ss) en ejercicios de estiramiento de ${config.label}.`;
+          }
+        }
+
+        if (entry.tracking_mode === "SETS_REPS") {
+          const setsDone = Number(entry.sets_done);
+          const repsDone = Number(entry.reps_done);
+          if (
+            !Number.isFinite(setsDone) ||
+            setsDone <= 0 ||
+            !Number.isFinite(repsDone) ||
+            repsDone <= 0
+          ) {
+            return `Debes ingresar series y repeticiones validas en ejercicios de estiramiento de ${config.label}.`;
+          }
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const updatePhaseWarning = (phaseKey) => {
+    const config = phaseConfigs[phaseKey];
+    if (!config?.warning) {
+      return;
+    }
+
+    const phaseError = getPhaseValidationError(phaseKey);
+    if (phaseError) {
+      config.warning.textContent = phaseError;
+      config.warning.style.display = "block";
+      return;
+    }
+
+    config.warning.textContent = "";
+    config.warning.style.display = "none";
+  };
+
+  const renderPhaseCardioList = (phaseKey) => {
+    const phaseState = phaseStates[phaseKey];
+    const config = phaseConfigs[phaseKey];
+    if (!phaseState || !config?.cardioList) {
+      return;
+    }
+
+    if (cardioExercises.length === 0) {
+      config.cardioList.innerHTML =
+        '<p class="text-instruction">No hay ejercicios de cardio disponibles.</p>';
+      return;
+    }
+
+    const optionsMarkup = cardioExercises
+      .filter(
+        (exercise) => !phaseState.selectedCardioIds.has(String(exercise.id)),
+      )
+      .map(
+        (exercise) =>
+          `<option value="${exercise.id}">${exercise.name} (${exercise.muscle_group})</option>`,
+      )
+      .join("");
+
+    const selectedRowsMarkup = Array.from(phaseState.selectedCardioIds)
+      .map((exerciseId) => {
+        const exercise = cardioExercises.find(
+          (item) => String(item.id) === String(exerciseId),
+        );
+        const entry = phaseState.cardioEntries.get(String(exerciseId));
+        if (!exercise || !entry) {
+          return "";
+        }
+
+        const distanceLabel =
+          entry.unit === "steps" ? "Pasos" : "Distancia (km)";
+
+        return `
+          <div class="phase-cardio-row">
+            <div class="form-group-inline phase-cardio-header-row">
+                <div>
+                    <strong>- ${exercise.name}</strong>
+                    <span class="exercise-meta-text">(${exercise.muscle_group})</span>
+                </div>
+                <div>
+                    <button type="button" class="warning-button phase-remove-item" data-phase="${phaseKey}" data-type="cardio" data-exercise-id="${exercise.id}">Quitar</button>
+                </div>
+
+            </div>
+
+            <div class="form-group-inline phase-cardio-input-row">
+              <label>Tiempo (mm:ss):</label>
+              <input
+                type="text"
+                placeholder="mm:ss"
+                class="form-control phase-cardio-duration"
+                data-phase="${phaseKey}"
+                data-exercise-id="${exercise.id}"
+                value="${entry.duration_mmss}"
+              >
+
+              <label>${distanceLabel}:</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                class="form-control phase-cardio-distance"
+                data-phase="${phaseKey}"
+                data-exercise-id="${exercise.id}"
+                value="${entry.distance_value}"
+                >
+                <label>Unidad:</label>
+                <select
+                    class="form-control phase-cardio-unit"
+                    data-phase="${phaseKey}"
+                    data-exercise-id="${exercise.id}"
+                >
+                    <option value="steps" ${entry.unit === "steps" ? "selected" : ""}>pasos</option>
+                    <option value="km" ${entry.unit === "km" ? "selected" : ""}>km</option>
+                </select>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+
+    config.cardioList.innerHTML = `
+      <div class="form-group-inline selectior-container phase-picker-row">
+        <select class="form-control phase-cardio-select-picker" data-phase="${phaseKey}">
+          <option value="">Selecciona un ejercicio cardiovascular</option>
+          ${optionsMarkup}
+        </select>
+        <button type="button" class="interactive-button phase-cardio-add-button" data-phase="${phaseKey}">Agregar cardio</button>
+      </div>
+      <div class="phase-selected-items">${selectedRowsMarkup}</div>
+    `;
+
+    config.cardioList
+      .querySelectorAll(".phase-cardio-add-button")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const select = config.cardioList.querySelector(
+            `.phase-cardio-select-picker[data-phase="${phaseKey}"]`,
+          );
+          const exerciseId = String(select?.value || "");
+          if (!exerciseId) {
+            return;
+          }
+          phaseState.selectedCardioIds.add(exerciseId);
+          renderPhaseSection(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.cardioList
+      .querySelectorAll('.phase-remove-item[data-type="cardio"]')
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const exerciseId = String(button.dataset.exerciseId || "");
+          phaseState.selectedCardioIds.delete(exerciseId);
+          const entry = phaseState.cardioEntries.get(exerciseId);
+          if (entry) {
+            entry.duration_mmss = "";
+            entry.distance_value = "";
+            entry.unit = "km";
+          }
+          renderPhaseSection(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.cardioList
+      .querySelectorAll(".phase-cardio-duration")
+      .forEach((input) => {
+        input.addEventListener("input", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.cardioEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.duration_mmss = event.target.value;
+          syncPhaseHiddenInput(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.cardioList
+      .querySelectorAll(".phase-cardio-unit")
+      .forEach((select) => {
+        select.addEventListener("change", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.cardioEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.unit = event.target.value;
+          renderPhaseSection(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.cardioList
+      .querySelectorAll(".phase-cardio-distance")
+      .forEach((input) => {
+        input.addEventListener("input", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.cardioEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.distance_value = event.target.value;
+          syncPhaseHiddenInput(phaseKey);
+          refreshSaveState();
+        });
+      });
+  };
+
+  const renderPhaseStretchingList = (phaseKey) => {
+    const phaseState = phaseStates[phaseKey];
+    const config = phaseConfigs[phaseKey];
+    if (!phaseState || !config?.stretchingList) {
+      return;
+    }
+
+    if (stretchingExercises.length === 0) {
+      config.stretchingList.innerHTML =
+        '<p class="text-instruction">No hay ejercicios de estiramiento disponibles.</p>';
+      return;
+    }
+
+    const optionsMarkup = stretchingExercises
+      .filter(
+        (exercise) => !phaseState.selectedFullBodyIds.has(String(exercise.id)),
+      )
+      .map(
+        (exercise) =>
+          `<option value="${exercise.id}">${exercise.name} (${exercise.muscle_group})</option>`,
+      )
+      .join("");
+
+    const selectedRowsMarkup = Array.from(phaseState.selectedFullBodyIds)
+      .map((exerciseId) => {
+        const exercise = stretchingExercises.find(
+          (item) => String(item.id) === String(exerciseId),
+        );
+        const entry = phaseState.fullBodyEntries.get(String(exerciseId));
+        if (!exercise) {
+          return "";
+        }
+
+        const isTimeMode = entry?.tracking_mode === "TIME";
+        const isSetsRepsMode = entry?.tracking_mode === "SETS_REPS";
+
+        return `
+          <div class="phase-cardio-row">
+            <div class="form-group-inline phase-stretching-row">
+                <div>
+                    <strong>- ${exercise.name}</strong>
+                    <span class="exercise-meta-text">(${exercise.muscle_group})</span>
+                </div>
+                <button type="button" class="warning-button phase-remove-item" data-phase="${phaseKey}" data-type="stretching" data-exercise-id="${exercise.id}">Quitar</button>
+            </div>
+
+            <div class="form-group-inline phase-fullbody-config-row">
+              <label>Modo:</label>
+              <select class="form-control phase-fullbody-mode" data-phase="${phaseKey}" data-exercise-id="${exercise.id}">
+                <option value="NONE" ${entry?.tracking_mode === "NONE" ? "selected" : ""}>Solo marcar</option>
+                <option value="TIME" ${isTimeMode ? "selected" : ""}>Tiempo total</option>
+                <option value="SETS_REPS" ${isSetsRepsMode ? "selected" : ""}>Series y repeticiones</option>
+              </select>
+
+              <div class="form-group-inline phase-fullbody-time-row" style="display: ${isTimeMode ? "flex" : "none"};">
+                <label>Tiempo (mm:ss):</label>
+                <input
+                  type="text"
+                  placeholder="mm:ss"
+                  class="form-control phase-fullbody-duration"
+                  data-phase="${phaseKey}"
+                  data-exercise-id="${exercise.id}"
+                  value="${entry?.duration_mmss || ""}"
+                >
+              </div>
+
+              <div class="form-group-inline phase-fullbody-sets-row" style="display: ${isSetsRepsMode ? "flex" : "none"};">
+                <label>Series:</label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  class="form-control phase-fullbody-sets"
+                  data-phase="${phaseKey}"
+                  data-exercise-id="${exercise.id}"
+                  value="${entry?.sets_done || ""}"
+                >
+                <label>Reps:</label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  class="form-control phase-fullbody-reps"
+                  data-phase="${phaseKey}"
+                  data-exercise-id="${exercise.id}"
+                  value="${entry?.reps_done || ""}"
+                >
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+
+    config.stretchingList.innerHTML = `
+      <div class="form-group-inline selectior-container phase-picker-row">
+        <select class="form-control phase-stretching-select-picker" data-phase="${phaseKey}">
+          <option value="">Selecciona un ejercicio de cuerpo completo</option>
+          ${optionsMarkup}
+        </select>
+        <button type="button" class="interactive-button phase-stretching-add-button" data-phase="${phaseKey}">Agregar estiramiento</button>
+      </div>
+      <div class="phase-selected-items">${selectedRowsMarkup}</div>
+    `;
+
+    config.stretchingList
+      .querySelectorAll(".phase-stretching-add-button")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const select = config.stretchingList.querySelector(
+            `.phase-stretching-select-picker[data-phase="${phaseKey}"]`,
+          );
+          const exerciseId = String(select?.value || "");
+          if (!exerciseId) {
+            return;
+          }
+          phaseState.selectedFullBodyIds.add(exerciseId);
+
+          const entry = phaseState.fullBodyEntries.get(exerciseId);
+          if (entry) {
+            entry.tracking_mode = "NONE";
+            entry.duration_mmss = "";
+            entry.sets_done = "";
+            entry.reps_done = "";
+          }
+
+          renderPhaseSection(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.stretchingList
+      .querySelectorAll('.phase-remove-item[data-type="stretching"]')
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const exerciseId = String(button.dataset.exerciseId || "");
+          phaseState.selectedFullBodyIds.delete(exerciseId);
+
+          const entry = phaseState.fullBodyEntries.get(exerciseId);
+          if (entry) {
+            entry.tracking_mode = "NONE";
+            entry.duration_mmss = "";
+            entry.sets_done = "";
+            entry.reps_done = "";
+          }
+
+          renderPhaseSection(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.stretchingList
+      .querySelectorAll(".phase-fullbody-mode")
+      .forEach((select) => {
+        select.addEventListener("change", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.fullBodyEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.tracking_mode = event.target.value;
+          if (entry.tracking_mode !== "TIME") {
+            entry.duration_mmss = "";
+          }
+          if (entry.tracking_mode !== "SETS_REPS") {
+            entry.sets_done = "";
+            entry.reps_done = "";
+          }
+
+          renderPhaseSection(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.stretchingList
+      .querySelectorAll(".phase-fullbody-duration")
+      .forEach((input) => {
+        input.addEventListener("input", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.fullBodyEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.duration_mmss = event.target.value;
+          syncPhaseHiddenInput(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.stretchingList
+      .querySelectorAll(".phase-fullbody-sets")
+      .forEach((input) => {
+        input.addEventListener("input", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.fullBodyEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.sets_done = event.target.value;
+          syncPhaseHiddenInput(phaseKey);
+          refreshSaveState();
+        });
+      });
+
+    config.stretchingList
+      .querySelectorAll(".phase-fullbody-reps")
+      .forEach((input) => {
+        input.addEventListener("input", (event) => {
+          const exerciseId = String(event.target.dataset.exerciseId);
+          const entry = phaseState.fullBodyEntries.get(exerciseId);
+          if (!entry) {
+            return;
+          }
+
+          entry.reps_done = event.target.value;
+          syncPhaseHiddenInput(phaseKey);
+          refreshSaveState();
+        });
+      });
+  };
+
+  const renderPhaseSection = (phaseKey) => {
+    const phaseState = phaseStates[phaseKey];
+    const config = phaseConfigs[phaseKey];
+    if (!phaseState || !config) {
+      return;
+    }
+
+    if (config.toggles.enabled) {
+      config.toggles.enabled.checked = phaseState.enabled;
+    }
+    if (config.toggles.cardio) {
+      config.toggles.cardio.checked = phaseState.includeCardio;
+    }
+    if (config.toggles.stretching) {
+      config.toggles.stretching.checked = phaseState.includeStretching;
+    }
+
+    if (config.fields) {
+      config.fields.style.display = phaseState.enabled ? "block" : "none";
+    }
+    if (config.cardioBlock) {
+      config.cardioBlock.style.display =
+        phaseState.enabled && phaseState.includeCardio ? "block" : "none";
+    }
+    if (config.stretchingBlock) {
+      config.stretchingBlock.style.display =
+        phaseState.enabled && phaseState.includeStretching ? "block" : "none";
+    }
+
+    if (phaseState.enabled && phaseState.includeCardio) {
+      renderPhaseCardioList(phaseKey);
+    }
+    if (phaseState.enabled && phaseState.includeStretching) {
+      renderPhaseStretchingList(phaseKey);
+    }
+
+    syncPhaseHiddenInput(phaseKey);
+    updatePhaseWarning(phaseKey);
+  };
+
+  const setupPhaseToggleListeners = (phaseKey) => {
+    const phaseState = phaseStates[phaseKey];
+    const config = phaseConfigs[phaseKey];
+    if (!phaseState || !config) {
+      return;
+    }
+
+    config.toggles.enabled?.addEventListener("change", (event) => {
+      phaseState.enabled = event.target.checked;
+      renderPhaseSection(phaseKey);
+      refreshSaveState();
+    });
+
+    config.toggles.cardio?.addEventListener("change", (event) => {
+      phaseState.includeCardio = event.target.checked;
+      renderPhaseSection(phaseKey);
+      refreshSaveState();
+    });
+
+    config.toggles.stretching?.addEventListener("change", (event) => {
+      phaseState.includeStretching = event.target.checked;
+      renderPhaseSection(phaseKey);
+      refreshSaveState();
+    });
+  };
+
   const getFirstValidationError = () => {
     if (selectedExercises.size === 0) {
       return "Debes agregar al menos un ejercicio al registro.";
@@ -268,6 +1025,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    const warmupValidationError = getPhaseValidationError("warmup");
+    if (warmupValidationError) {
+      return warmupValidationError;
+    }
+
+    const cooldownValidationError = getPhaseValidationError("cooldown");
+    if (cooldownValidationError) {
+      return cooldownValidationError;
+    }
+
     return null;
   };
 
@@ -289,6 +1056,9 @@ document.addEventListener("DOMContentLoaded", () => {
         saveWarning.style.display = "none";
       }
     }
+
+    updatePhaseWarning("warmup");
+    updatePhaseWarning("cooldown");
 
     return validationError;
   };
@@ -746,6 +1516,11 @@ document.addEventListener("DOMContentLoaded", () => {
       closeSaveConfirmModal();
     }
   });
+
+  setupPhaseToggleListeners("warmup");
+  setupPhaseToggleListeners("cooldown");
+  renderPhaseSection("warmup");
+  renderPhaseSection("cooldown");
 
   syncHiddenInput();
 

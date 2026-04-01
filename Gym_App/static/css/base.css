@@ -79,7 +79,7 @@ h1 { font-size: 4.8rem;}
 h2 { font-size: 3.2rem;}
 h3 { font-size: 2.4rem; }
 
-p, li {
+p, li, strong, span {
     font-size: 2rem;
     line-height: 1.6;
     margin: 0.5rem 0;
@@ -315,4 +315,31 @@ footer p {
     font-size: 1.4rem;
     color: var(--text-muted);
     margin: 0;
+}
+
+/* ==========================================================================
+    7. MEDIA QUERIES - RESPONSIVE
+    ========================================================================== */
+@media (max-width: 1050px) {
+     html {
+          font-size: 50%; /* 1rem = 5px */
+     }
+}
+
+@media (max-width: 850px) {
+     html {
+          font-size: 40%; /* 1rem = 5px */
+     }
+}
+
+@media (max-width: 650px) {
+     html {
+          font-size: 30%; /* 1rem = 5px */
+     }
+}
+
+@media (max-width: 550px) {
+     html {
+          font-size: 25%; /* 1rem = 5px */
+     }
 }

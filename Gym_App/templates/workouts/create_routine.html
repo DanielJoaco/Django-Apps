@@ -81,6 +81,8 @@
                 <label>Grupo Muscular (Obligatorio):</label>
                 {{ exercise_form.muscle_group }}
             </div>
+
+            <p id="exercise-type-hint" class="text-instruction"></p>
             
             <div class="form-group">
                 <label>Nombre del Ejercicio:</label>
@@ -92,9 +94,9 @@
                 {{ exercise_form.image }}
             </div>
             
-            <div class="form-group-inline checkbox-container">
+            <div id="tracks-weight-container" class="form-group-inline checkbox-container">
                 {{ exercise_form.tracks_weight }}
-                <label class="label-light">Este ejercicio requiere registrar peso levantado</label>
+                <label id="tracks-weight-label" class="label-light">Este ejercicio requiere registrar peso levantado</label>
             </div>
             
             <div class="modal-actions-container">

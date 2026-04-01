@@ -1,5 +1,16 @@
 from django.contrib import admin
-from .models import MovementPattern, MuscleGroup, Exercise, Routine, RoutineItem, WorkoutSession, CardioLog, ExerciseLog, SetRecord
+from .models import (
+    MovementPattern,
+    MuscleGroup,
+    Exercise,
+    Routine,
+    RoutineItem,
+    WorkoutSession,
+    SessionExerciseEntry,
+    StrengthSetEntry,
+    CardioEntry,
+    FullBodyEntry,
+)
 
 # ==============================================================================
 # TAXONOMÍA Y CATÁLOGO GLOBAL
@@ -18,9 +29,9 @@ class MuscleGroupAdmin(admin.ModelAdmin):
 
 @admin.register(Exercise)
 class ExerciseAdmin(admin.ModelAdmin):
-    list_display = ('name', 'muscle_group', 'tracks_weight', 'is_active', 'created_by')
+    list_display = ('name', 'muscle_group', 'exercise_type', 'tracks_weight', 'is_active', 'created_by')
     # Permite filtrar por patrón de movimiento a través de la relación de la llave foránea
-    list_filter = ('muscle_group__pattern', 'muscle_group', 'tracks_weight', 'is_active')
+    list_filter = ('muscle_group__pattern', 'muscle_group', 'exercise_type', 'tracks_weight', 'is_active')
     search_fields = ('name',)
 
 # ==============================================================================
@@ -42,25 +53,34 @@ class RoutineAdmin(admin.ModelAdmin):
 # DATOS TRANSACCIONALES
 # ==============================================================================
 
-class CardioLogInline(admin.TabularInline):
-    model = CardioLog
-    extra = 0
-
-class ExerciseLogInline(admin.TabularInline):
-    model = ExerciseLog
+class SessionExerciseEntryInline(admin.TabularInline):
+    model = SessionExerciseEntry
     extra = 0
 
 @admin.register(WorkoutSession)
 class WorkoutSessionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'start_time', 'end_time')
-    list_filter = ('start_time', 'user')
-    inlines = [CardioLogInline, ExerciseLogInline]
+    list_display = ('id', 'user', 'started_at', 'ended_at')
+    list_filter = ('started_at', 'user')
+    inlines = [SessionExerciseEntryInline]
 
-class SetRecordInline(admin.TabularInline):
-    model = SetRecord
+class StrengthSetEntryInline(admin.TabularInline):
+    model = StrengthSetEntry
     extra = 1
 
-@admin.register(ExerciseLog)
-class ExerciseLogAdmin(admin.ModelAdmin):
-    list_display = ('session', 'exercise', 'order')
-    inlines = [SetRecordInline]
+@admin.register(SessionExerciseEntry)
+class SessionExerciseEntryAdmin(admin.ModelAdmin):
+    list_display = ('session', 'exercise', 'phase', 'entry_type', 'order', 'created_at')
+    list_filter = ('phase', 'entry_type', 'session__user')
+    inlines = [StrengthSetEntryInline]
+
+
+@admin.register(CardioEntry)
+class CardioEntryAdmin(admin.ModelAdmin):
+    list_display = ('entry', 'duration_seconds', 'distance_value', 'distance_unit')
+    list_filter = ('distance_unit',)
+
+
+@admin.register(FullBodyEntry)
+class FullBodyEntryAdmin(admin.ModelAdmin):
+    list_display = ('entry', 'tracking_mode', 'duration_seconds', 'sets_done', 'reps_done')
+    list_filter = ('tracking_mode',)

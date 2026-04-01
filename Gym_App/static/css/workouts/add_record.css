@@ -69,8 +69,10 @@
 .interactive-button,
 .btn-add-set-size,
 .btn-remove-exercise-size,
-.btn-remove-set {
+.btn-remove-set,
+.phase-remove-item {
   padding: 0.5rem;
+  max-width: 10rem;
 }
 
 /* ==========================================================================
@@ -110,9 +112,15 @@
 
 /* Elementos de Formulario */
 .form-control {
-  max-width: 25rem;
+  max-width: 40rem;
 }
 
+.phase-subblock{
+    background-color: var(--bg-dark);
+    opacity: 0.8;
+    padding: 2rem;
+    border-radius: 2rem;
+}
 .set-value-input {
   width: 5rem;
 }
@@ -162,4 +170,99 @@
 
 .button-delete-container {
   margin: 2rem;
+}
+
+.phase-container {
+  width: 100%;
+}
+
+.phase-fields {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.phase-subblock {
+  border: 0.1rem solid var(--border-thin);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.phase-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.phase-toggle-row {
+  gap: 0.8rem;
+}
+
+.phase-cardio-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-bottom: 0.1rem solid var(--border-thin);
+  padding-bottom: 0.8rem;
+}
+
+.phase-cardio-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.phase-cardio-header-row,
+.phase-cardio-input-row,
+.phase-stretching-row {
+  gap: 0.8rem;
+}
+
+.phase-cardio-input-row, .phase-fullbody-config-row{
+    justify-content: center;
+}
+
+.phase-cardio-header-row, .phase-stretching-row{
+    align-items: center;
+    justify-content: space-between;
+}
+
+.phase-fullbody-config-row,
+.phase-fullbody-time-row,
+.phase-fullbody-sets-row {
+  gap: 0.8rem;
+}
+
+.phase-fullbody-config-row .form-control,
+.phase-fullbody-time-row .form-control,
+.phase-fullbody-sets-row .form-control {
+  max-width: 12rem;
+}
+
+.phase-picker-row {
+  margin-bottom: 0.8rem;
+}
+
+.phase-selected-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.phase-remove-item {
+  padding: 0.3rem 0.8rem;
+  font-size: 1rem;
+}
+
+.phase-cardio-input-row .form-control {
+  max-width: 6rem;
+}
+
+#confirm-save-no, #confirm-save-yes{
+    width: 50%;
+    margin-top: 1rem;
+    padding: 1.5rem;
+    font-size: 1.6rem;
+    border-radius: 0.5rem;
+    max-width: none;
 }

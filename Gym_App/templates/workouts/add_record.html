@@ -1,371 +1,260 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
-
-
 {% block title %}Nuevo Registro - Gym App{% endblock %}
-
-
 
 {% block logo_title %}Nuevo Registro{% endblock %}
 
 {% block extra_head %}
-
 {{ block.super }}
-
 <link rel="stylesheet" href="{% static 'css/workouts/add_record.css' %}">
-
 {% endblock %}
 
-
-
 {% block content %}
-
     <section class="add-record-container">
-
-
-
         <div class="title-header">
-
             <h2>Registrar Nueva Entrada</h2>
-
         </div>
 
-
-
         <form id="add-record-form" method="post">
-
             {% csrf_token %}
 
-       
-
             <div class="data-entry-container">
-
-
-
                 <div class="excercise-info">
-
                     <div class="exercise-date">
-
                         <label for="id_date">Fecha del Ejercicio:</label>
-
                         <input type="date" id="id_date" name="date" class="form-control" value="{{ selected_date|default:today_date }}" max="{{ today_date }}">
-
                         {% if date_error %}
-
                             <p class="text-warning">{{ date_error }}</p>
-
                         {% endif %}
-
                     </div>
 
                     <div class="exercise-hour">
-
                         <div class="start-time-container">
-
                             <label for="id_start_hour">Hora de Inicio del Ejercicio:</label>
-
                             <div class="form-group-inline">
-
                                 <select id="id_start_hour" name="start_hour" class="form-control">
-
                                     {% for hour in hour_options %}
-
                                         <option value="{{ hour }}" {% if selected_hour == hour|stringformat:"s" %}selected{% endif %}>
-
                                             {{ hour }}
-
                                         </option>
-
                                     {% endfor %}
-
                                 </select>
-
                                 <span>:</span>
-
                                 <select id="id_start_minute" name="start_minute" class="form-control">
-
                                     {% for value in minute_options %}
-
                                         {% with padded=value|stringformat:"02d" %}
-
                                             <option value="{{ padded }}" {% if selected_minute == padded %}selected{% endif %}>
-
                                                 {{ padded }}
-
                                             </option>
-
                                         {% endwith %}
-
                                     {% endfor %}
-
                                 </select>
-
                                 <select id="id_start_period" name="start_period" class="form-control">
-
                                     <option value="AM" {% if selected_period == 'AM' %}selected{% endif %}>AM</option>
-
                                     <option value="PM" {% if selected_period == 'PM' %}selected{% endif %}>PM</option>
-
                                 </select>
-
                             </div>
-
                         </div>
 
                         <p class="text-instruction">Hora actual de referencia: {{ current_time_display }}</p>
-
                         {% if time_error %}
-
                             <p class="text-warning">{{ time_error }}</p>
-
                         {% endif %}
-
                     </div>
-
                 </div>
-
-
-
-
 
                 <div class="exercise-selection">
-
-
-
                     <div class="add-routine">
-
                         <label for="id_routine_template">Agregar ejercicios desde una rutina:</label>
-
                         <div class="form-group-inline selectior-container">
-
                             <select id="id_routine_template" class="form-control">
-
                                 <option value="">Selecciona una rutina</option>
-
                                 {% for routine in routines %}
-
                                     <option value="{{ routine.id }}">{{ routine.name }}</option>
-
                                 {% endfor %}
-
                             </select>
-
                             <button type="button" id="btn-add-routine-exercises" class="interactive-button">Agregar rutina</button>
-
                         </div>
-
                     </div>
-
-
 
                     <div class="manual-exercise-container">
-
                         <label for="id_manual_exercise">Agregar ejercicio manualmente:</label>
-
                         <div class="form-group-inline selectior-container">
-
                             <select id="id_manual_exercise" class="form-control">
-
                                 <option value="">Selecciona un ejercicio</option>
-
                                 {% for exercise in active_exercises %}
-
                                     <option value="{{ exercise.id }}">{{ exercise.name }} ({{ exercise.muscle_group.name }})</option>
-
                                 {% endfor %}
-
                             </select>
-
                             <button type="button" id="btn-add-manual-exercise" class="interactive-button">Agregar ejercicio</button>
-
                         </div>
-
                     </div>
-
                 </div>
-
-
 
             </div>
 
+            <div class="data-entry-container phase-container" id="warmup-phase-container">
+                <div class="title-header">
+                    <h3>Calentamiento (Opcional)</h3>
+                </div>
 
+                <div class="form-group-inline phase-toggle-row">
+                    <input type="checkbox" id="warmup-enabled" class="form-check-input">
+                    <label for="warmup-enabled">Deseo registrar calentamiento</label>
+                </div>
+
+                <div id="warmup-phase-fields" class="phase-fields" style="display: none;">
+                    <div class="form-group-inline phase-toggle-row">
+                        <input type="checkbox" id="warmup-include-cardio" class="form-check-input">
+                        <label for="warmup-include-cardio">Incluir cardio</label>
+                    </div>
+
+                    <div id="warmup-cardio-block" class="phase-subblock" style="display: none;">
+                        <p class="text-instruction">Selecciona ejercicios de cardio y registra distancia/tiempo. Unidad: pasos o km.</p>
+                        <div id="warmup-cardio-list" class="phase-exercise-list"></div>
+                    </div>
+
+                    <div class="form-group-inline phase-toggle-row">
+                        <input type="checkbox" id="warmup-include-stretching" class="form-check-input">
+                        <label for="warmup-include-stretching">Incluir estiramiento</label>
+                    </div>
+
+                    <div id="warmup-stretching-block" class="phase-subblock" style="display: none;">
+                        <p class="text-instruction">Selecciona ejercicios de cuerpo completo/estiramiento. Puedes solo marcar, registrar tiempo o series/repeticiones.</p>
+                        <div id="warmup-stretching-list" class="phase-exercise-list"></div>
+                    </div>
+                </div>
+
+                <p id="warmup-warning" class="text-warning" style="display: none;"></p>
+                {% if warmup_error %}
+                    <p class="text-warning">{{ warmup_error }}</p>
+                {% endif %}
+                <input type="hidden" id="warmup_details_json" name="warmup_details_json" value="{}">
+            </div>
 
             <div class="selected-exercises-container data-entry-container">
-
                 <div class="title-header">
-
                     <h3>Ejercicios Seleccionados para el Registro</h3>
-
                 </div>
-
-
 
                 <p class="text-instruction">
-
                     Ajusta series y repeticiones por ejercicio. Puedes cambiar a segundos y registrar peso en kg o lbs.
-
                 </p>
 
-
-
                 <p id="selected-empty-message" class="text-instruction">No has agregado ejercicios todavía.</p>
-
-
-
                 <ul id="selected-exercises-list" class="unstyled-list"></ul>
 
-
-
                 <input type="hidden" id="selected_exercises_json" name="selected_exercises_json" value="[]">
-
                 {% if selected_exercises_error %}
-
                     <p class="text-warning">{{ selected_exercises_error }}</p>
-
                 {% endif %}
-
             </div>
 
-
-
-            <div class="exercise-hour data-entry-container">
-
-                <div class="start-time-container">
-
-                <label for="id_end_hour">Hora de Finalizacion del Ejercicio:</label>
-
-                    <div class="form-group-inline">
-
-                        <select id="id_end_hour" name="end_hour" class="form-control">
-
-                            {% for hour in hour_options %}
-
-                                <option value="{{ hour }}" {% if selected_end_hour == hour|stringformat:"s" %}selected{% endif %}>
-
-                                    {{ hour }}
-
-                                </option>
-
-                            {% endfor %}
-
-                        </select>
-
-                        <span>:</span>
-
-                        <select id="id_end_minute" name="end_minute" class="form-control">
-
-                            {% for value in minute_options %}
-
-                                {% with padded=value|stringformat:"02d" %}
-
-                                    <option value="{{ padded }}" {% if selected_end_minute == padded %}selected{% endif %}>
-
-                                        {{ padded }}
-
-                                    </option>
-
-                                {% endwith %}
-
-                            {% endfor %}
-
-                        </select>
-
-                        <select id="id_end_period" name="end_period" class="form-control">
-
-                            <option value="AM" {% if selected_end_period == 'AM' %}selected{% endif %}>AM</option>
-
-                            <option value="PM" {% if selected_end_period == 'PM' %}selected{% endif %}>PM</option>
-
-                        </select>
-
-                    </div>
-
+            <div class="data-entry-container phase-container" id="cooldown-phase-container">
+                <div class="title-header">
+                    <h3>Cardio Final y Estiramiento (Opcional)</h3>
                 </div>
 
+                <div class="form-group-inline phase-toggle-row">
+                    <input type="checkbox" id="cooldown-enabled" class="form-check-input">
+                    <label for="cooldown-enabled">Deseo registrar cardio final / estiramiento</label>
+                </div>
 
+                <div id="cooldown-phase-fields" class="phase-fields" style="display: none;">
+                    <div class="form-group-inline phase-toggle-row">
+                        <input type="checkbox" id="cooldown-include-cardio" class="form-check-input">
+                        <label for="cooldown-include-cardio">Incluir cardio</label>
+                    </div>
+
+                    <div id="cooldown-cardio-block" class="phase-subblock" style="display: none;">
+                        <p class="text-instruction">Selecciona ejercicios de cardio y registra distancia/tiempo. Unidad: pasos o km.</p>
+                        <div id="cooldown-cardio-list" class="phase-exercise-list"></div>
+                    </div>
+
+                    <div class="form-group-inline phase-toggle-row">
+                        <input type="checkbox" id="cooldown-include-stretching" class="form-check-input">
+                        <label for="cooldown-include-stretching">Incluir estiramiento</label>
+                    </div>
+
+                    <div id="cooldown-stretching-block" class="phase-subblock" style="display: none;">
+                        <p class="text-instruction">Selecciona ejercicios de cuerpo completo/estiramiento. Puedes solo marcar, registrar tiempo o series/repeticiones.</p>
+                        <div id="cooldown-stretching-list" class="phase-exercise-list"></div>
+                    </div>
+                </div>
+
+                <p id="cooldown-warning" class="text-warning" style="display: none;"></p>
+                {% if cooldown_error %}
+                    <p class="text-warning">{{ cooldown_error }}</p>
+                {% endif %}
+                <input type="hidden" id="cooldown_details_json" name="cooldown_details_json" value="{}">
+            </div>
+
+            <div class="exercise-hour data-entry-container">
+                <div class="start-time-container">
+                    <label for="id_end_hour">Hora de Finalizacion del Ejercicio:</label>
+                    <div class="form-group-inline">
+                        <select id="id_end_hour" name="end_hour" class="form-control">
+                            {% for hour in hour_options %}
+                                <option value="{{ hour }}" {% if selected_end_hour == hour|stringformat:"s" %}selected{% endif %}>
+                                    {{ hour }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <span>:</span>
+                        <select id="id_end_minute" name="end_minute" class="form-control">
+                            {% for value in minute_options %}
+                                {% with padded=value|stringformat:"02d" %}
+                                    <option value="{{ padded }}" {% if selected_end_minute == padded %}selected{% endif %}>
+                                        {{ padded }}
+                                    </option>
+                                {% endwith %}
+                            {% endfor %}
+                        </select>
+                        <select id="id_end_period" name="end_period" class="form-control">
+                            <option value="AM" {% if selected_end_period == 'AM' %}selected{% endif %}>AM</option>
+                            <option value="PM" {% if selected_end_period == 'PM' %}selected{% endif %}>PM</option>
+                        </select>
+                    </div>
+                </div>
 
                 <p class="text-instruction">Se actualiza automáticamente con la hora actual hasta que la edites manualmente.</p>
 
-
-
                 <div class="button-sumit-container">
-
                     <button type="submit" id="btn-save-record" class="success-button">Guardar Registro</button>
-
                     <p id="save-warning" class="text-warning" style="display: none; margin: 0; flex: 1;"></p>
-
                 </div>
 
-               
-
                 {% if end_time_error %}
-
                     <p class="text-warning">{{ end_time_error }}</p>
-
                 {% endif %}
-
             </div>
-
-
-
-
-
-
-
         </form>
 
-
-
         {{ routines_data|json_script:'routines-data' }}
-
         {{ exercises_data|json_script:'exercises-data' }}
-
+        {{ cardio_exercises_data|json_script:'cardio-exercises-data' }}
+        {{ stretching_exercises_data|json_script:'stretching-exercises-data' }}
     </section>
 
-
-
     <div id="confirm-save-modal" class="custom-modal">
-
         <div class="modal-content">
-
             <span class="close-button" id="close-confirm-save">&times;</span>
 
-
-
             <div class="title-header">
-
                 <h3>Confirmar Registro</h3>
-
             </div>
-
-
 
             <p>¿Deseas finalizar y guardar este registro?</p>
 
-
-
             <div class="form-group-inline" style="justify-content: flex-end;">
-
                 <button type="button" id="confirm-save-yes" class="success-button confirm-submit-button" disabled>Si (3)</button>
-
                 <button type="button" id="confirm-save-no" class="interactive-button">No</button>
-
             </div>
-
         </div>
-
     </div>
-
-
-
 {% endblock %}
 
-
-
 {% block extra_scripts %}
-
     <script src="{% static 'js/workouts/add_record.js' %}"></script>
-
 {% endblock %}
