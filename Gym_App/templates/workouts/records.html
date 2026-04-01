@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registros - Gym App{% endblock %}
+
+{% block logo_title %}Registros{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+
+    <article class="resume-exercises-log">
+        <div class="title-header">
+            <h3>Mi Registros</h3>
+        </div>
+
+        {% if recent_exercises %}
+            <ul class="exercise-log-list">
+                {% for log in recent_exercises %}
+                    <li class="exercise-log-item">
+                        <strong>{{ log.exercise.name }}</strong> - {{ log.date|date:"d M Y" }}
+                        <br>
+                        Series: {{ log.sets }} | Reps: {{ log.reps }} | Peso: {{ log.weight }} kg
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aún no has registrado ningún ejercicio. ¡Empieza a registrar tus entrenamientos para verlos aquí!</p>
+        {% endif %}
+    </article>
+
+    <button class="success-button" onclick="window.location.href='{% url 'workouts:add_record' %}'">
+        Añadir Nuevo Registro
+    </button>
+</section>
+{% endblock %}

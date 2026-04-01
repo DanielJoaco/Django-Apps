@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const navMap = [
 		{ id: 'dashboard-link', prefixes: ['/dashboard'] },
-		{ id: 'routines-link', prefixes: ['/workouts'] },
-		{ id: 'records-link', prefixes: ['/records'] },
+		{ id: 'routines-link', prefixes: ['/workouts/routines'] },
+		{ id: 'records-link', prefixes: ['/workouts/records'] },
 		{ id: 'weight-link', prefixes: ['/measurements', '/weight'] }
 	];
 

@@ -24,3 +24,12 @@ class ExerciseAsyncForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'custom-file-input'}),
             'tracks_weight': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
+
+    def clean_name(self):
+        """Evita duplicados del nombre sin importar mayúsculas/minúsculas."""
+        name = (self.cleaned_data.get('name') or '').strip()
+
+        if Exercise.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError('Ya existe un ejercicio con ese nombre.')
+
+        return name

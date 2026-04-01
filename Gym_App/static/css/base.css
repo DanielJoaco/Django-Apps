@@ -213,6 +213,17 @@ button {
     color: var(--text-primary);
 }
 
+.success-button:disabled {
+    background-color: var(--bg-green);
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+}
+
+.success-button:disabled:hover {
+    box-shadow: none;
+}
+
 /* Botón de Logout (Estilo Link) */
 #logout-button {
     color: var(--text-primary);
@@ -268,6 +279,12 @@ button {
     font-size: 1.4rem; 
     color: var(--text-muted); 
     margin-bottom: 2rem;
+}
+
+.text-warning {
+    color: var(--text-warning);
+    font-size: 1.4rem;
+    margin-top: 2rem;
 }
 
 .close-button {
