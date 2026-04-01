@@ -191,8 +191,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <input type="hidden" name="exercises[]" value="${id}">
             </div>
             <div>
-                <input type="number" name="sets_${id}" placeholder="Series" min="1" required value="${initialSets}" style="width: 70px; margin-left:10px;" class="form-control">
-                <input type="number" name="reps_${id}" placeholder="Reps" min="1" required value="${initialReps}" style="width: 70px; margin-left:10px;" class="form-control">
+                <input type="number" name="sets_${id}" placeholder="Series" min="1" required value="${initialSets}" class="form-control input-number">
+                <input type="number" name="reps_${id}" placeholder="Reps" min="1" required value="${initialReps}" class="form-control input-number">
                 <button type="button" onclick="this.parentElement.parentElement.remove()" style="color: var(--text-warning); margin-left:10px; border:none; background:none; cursor:pointer; font-weight:bold;">X</button>
             </div>
         `;

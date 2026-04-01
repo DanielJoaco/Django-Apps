@@ -332,14 +332,54 @@ footer p {
      }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 700px) {
      html {
-          font-size: 30%; /* 1rem = 5px */
+          font-size: 35%; /* 1rem = 5px */
      }
+     .dashboard-container{
+        flex-direction: column-reverse;
+          align-items: center;
+     }
+
+      .resume-exercises-log {
+          order: 1;
+          width: 100%;
+      }
+
+      .dashboard-bottom-row {
+          order: 2;
+          display: flex;
+          gap: 1.5rem;
+          width: 100%;
+      }
+
+      .dashboard-bottom-row .list-of-routines,
+      .dashboard-bottom-row .dashboard-actions {
+          min-width: 25rem;
+      }
+
 }
 
 @media (max-width: 550px) {
-     html {
-          font-size: 25%; /* 1rem = 5px */
+    h1{
+        font-size: 3.6rem;
+    }
+    h2{
+        font-size: 2.8rem;
+    }
+     #logo-title{
+        display: none;
+     }
+
+     nav{
+        padding: 0 1.5rem;
+     }
+     #nav-list div {
+        gap: 2rem;
+     }
+     
+     #logout-button{
+        font-size: 1.6rem;
+        padding: 0;
      }
 }

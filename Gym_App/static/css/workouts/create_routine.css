@@ -47,6 +47,11 @@
     max-width: 80rem;
 }
 
+.input-number {
+    width: 4rem;
+    text-align: center;
+}
+
 .form-group-inline {
     display: flex;
     align-items: center;    gap: 1rem;
@@ -200,4 +205,13 @@
 .div-btn-success{
     max-width: 30rem;
     margin: 0 auto;
+}
+
+@media (max-width: 650px) {
+    main{
+        padding: 3rem 0;
+    }
+    .routine-add-item{
+    flex-direction: column;
+    }
 }

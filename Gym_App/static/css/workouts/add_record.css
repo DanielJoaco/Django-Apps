@@ -266,3 +266,10 @@
     border-radius: 0.5rem;
     max-width: none;
 }
+
+@media (max-width: 650px) {
+    .excercise-info, .exercise-selection{
+      flex-direction: column;
+      align-items: center;
+    }
+}
