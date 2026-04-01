@@ -697,6 +697,7 @@ def add_record_view(request):
             'id': exercise.id,
             'name': exercise.name,
             'muscle_group': exercise.muscle_group.name if exercise.muscle_group else 'General',
+            'image': exercise.image,
         }
         for exercise in active_exercises
         if _matches_muscle_group(exercise, 'Cardiovascular')
@@ -707,6 +708,7 @@ def add_record_view(request):
             'id': exercise.id,
             'name': exercise.name,
             'muscle_group': exercise.muscle_group.name if exercise.muscle_group else 'General',
+            'image': exercise.image,
         }
         for exercise in active_exercises
         if _matches_muscle_group(exercise, 'Cuerpo Completo')
@@ -721,6 +723,7 @@ def add_record_view(request):
                     'id': item.exercise.id,
                     'name': item.exercise.name,
                     'muscle_group': item.exercise.muscle_group.name if item.exercise.muscle_group else 'General',
+                    'image': item.exercise.image,
                     'tracks_weight': item.exercise.tracks_weight,
                     'recommended_sets': item.recommended_sets,
                     'recommended_reps': item.recommended_reps,
@@ -737,6 +740,7 @@ def add_record_view(request):
             'id': exercise.id,
             'name': exercise.name,
             'muscle_group': exercise.muscle_group.name if exercise.muscle_group else 'General',
+            'image': exercise.image,
             'tracks_weight': exercise.tracks_weight,
             'recommended_sets': 3,
             'recommended_reps': 10,

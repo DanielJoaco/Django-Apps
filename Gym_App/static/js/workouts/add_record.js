@@ -1207,9 +1207,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-                    <div class="exercise-sets-container">
+                    <div class="exercise-main-row">
+
+                      ${exercise.image ? `<img src="${exercise.image}" alt="${exercise.name}"  class="exercise-image">` : ""}
+
+                      <div class="exercise-sets-container">
 
                         ${setRows}
+
+                      </div>
 
                     </div>
 
@@ -1403,6 +1409,8 @@ document.addEventListener("DOMContentLoaded", () => {
         id: exercise.id,
 
         name: exercise.name,
+
+        image: exercise.image,
 
         muscle_group: exercise.muscle_group,
 
