@@ -1,19 +1,32 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%)+-4zyn*8gx+va6sf)-qsyji5n(hoo_v3ww5kjz55j@)s4q&^'
+# ==============================================================================
+# 1. CONFIGURACIÓN DE SEGURIDAD Y ENTORNO
+# ==============================================================================
+# DEBUG debe definirse ANTES de evaluar cualquier otra lógica.
+# Será False automáticamente en Render, y True en tu máquina local.
+DEBUG = 'RENDER' not in os.environ
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Seguridad: Toma la llave del entorno en producción, usa una por defecto en local.
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 
+    'django-insecure-%)+-4zyn*8gx+va6sf)-qsyji5n(hoo_v3ww5kjz55j@)s4q&^'
+)
 
-ALLOWED_HOSTS = []
+# Hosts permitidos: Se auto-configura si está en Render, o permite local.
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Application definition
-
+# ==============================================================================
+# 2. DEFINICIÓN DE APLICACIONES Y MIDDLEWARE
+# ==============================================================================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -29,6 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Debe ir justo debajo de Security
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -42,7 +56,6 @@ ROOT_URLCONF = 'Gym_App.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Se define aquí el directorio global de plantillas
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -57,12 +70,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Gym_App.wsgi.application'
 
-# Database
+# ==============================================================================
+# 3. BASE DE DATOS
+# ==============================================================================
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Concatenación absoluta para asegurar que SQLite se cree en la raíz local
+        default=f'sqlite:///{BASE_DIR}/db.sqlite3',
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -73,30 +89,39 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
+# ==============================================================================
+# 4. INTERNACIONALIZACIÓN Y TIEMPO
+# ==============================================================================
 LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# ==============================================================================
+# 5. ARCHIVOS ESTÁTICOS (CSS, JS, Imágenes del sistema)
+# ==============================================================================
 STATIC_URL = 'static/'
-
-# Directorios globales para archivos estáticos
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     BASE_DIR / "static", 
 ]
 
-# Configuración de Autenticación
+# Ahora DEBUG tiene el valor correcto cuando el intérprete llega a esta línea
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ==============================================================================
+# 6. ARCHIVOS MULTIMEDIA (Subidas por el usuario)
+# ==============================================================================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ==============================================================================
+# 7. CONFIGURACIÓN DE AUTENTICACIÓN
+# ==============================================================================
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# URL pública para acceder a los archivos multimedia subidos
-MEDIA_URL = '/media/'
-
-# Ruta absoluta en tu disco duro donde Django guardará físicamente los archivos
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
