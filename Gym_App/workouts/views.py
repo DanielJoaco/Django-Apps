@@ -192,13 +192,12 @@ def search_exercises_api(request):
 def create_exercise_api(request):
     """Endpoint asíncrono para crear un nuevo ejercicio en el catálogo global."""
     if request.method == 'POST':
-        form = ExerciseAsyncForm(request.POST, request.FILES)
+        form = ExerciseAsyncForm(request.POST)
         if form.is_valid():
             # El formulario ya valida el muscle_group obligatoriamente
             exercise = form.save(commit=False)
             # Registramos qué usuario aportó este ejercicio al sistema
             exercise.created_by = request.user 
-            # Detona la compresión de Pillow y guarda en base de datos
             exercise.save() 
             
             return JsonResponse({

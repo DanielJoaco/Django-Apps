@@ -74,7 +74,7 @@
             Este ejercicio se añadirá al catálogo global. Por favor, selecciona el grupo muscular correcto.
         </p>
 
-        <form id="async-exercise-form" enctype="multipart/form-data" data-url="{% url 'workouts:api_create_exercise' %}">
+        <form id="async-exercise-form" data-url="{% url 'workouts:api_create_exercise' %}">
             {% csrf_token %}
             
             <div class="form-group">
@@ -90,7 +90,7 @@
             </div>
             
             <div class="form-group">
-                <label>Imagen Demostrativa (Opcional):</label>
+                <label>URL de Imagen Demostrativa (Opcional):</label>
                 {{ exercise_form.image }}
             </div>
             

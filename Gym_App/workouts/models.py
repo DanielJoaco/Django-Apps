@@ -1,9 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from PIL import Image
-import io
-import sys
 
 # ==============================================================================
 # TAXONOMÍA Y CATÁLOGO GLOBAL (Público / Compartido)
@@ -43,7 +39,7 @@ class Exercise(models.Model):
     muscle_group = models.ForeignKey(MuscleGroup, on_delete=models.PROTECT) # PROTECT evita borrar un músculo si tiene ejercicios
     name = models.CharField(max_length=150, unique=True)
     description = models.TextField(blank=True, null=True, help_text="Instrucciones o notas de ejecución.")
-    image = models.ImageField(upload_to='exercise_images/', blank=True, null=True)
+    image = models.URLField(blank=True, null=True)
     exercise_type = models.CharField(max_length=20, choices=EXERCISE_TYPE_CHOICES, default=EXERCISE_TYPE_STRENGTH)
     tracks_weight = models.BooleanField(default=True, help_text="¿Requiere registrar peso?")
     is_active = models.BooleanField(default=True)
@@ -70,19 +66,6 @@ class Exercise(models.Model):
 
     def save(self, *args, **kwargs):
         self._sync_exercise_type_from_muscle_group()
-
-        if self.image and not self.image._committed:
-            img = Image.open(self.image)
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            img.thumbnail((200, 200), Image.Resampling.LANCZOS)
-            output = io.BytesIO()
-            img.save(output, format='JPEG', quality=85)
-            output.seek(0)
-            self.image = InMemoryUploadedFile(
-                output, 'ImageField', f"{self.image.name.split('.')[0]}.jpg", 
-                'image/jpeg', sys.getsizeof(output), None
-            )
         super().save(*args, **kwargs)
 
     def __str__(self):

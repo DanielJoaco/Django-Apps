@@ -1,5 +1,5 @@
 from django import forms
-from .models import Routine, Exercise, MuscleGroup
+from .models import Routine, Exercise
 
 class RoutineForm(forms.ModelForm):
     class Meta:
@@ -21,7 +21,7 @@ class ExerciseAsyncForm(forms.ModelForm):
         widgets = {
             'muscle_group': forms.Select(attrs={'class': 'form-select'}),
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del ejercicio'}),
-            'image': forms.FileInput(attrs={'class': 'custom-file-input'}),
+            'image': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://ejemplo.com/imagen.jpg'}),
             'tracks_weight': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
 

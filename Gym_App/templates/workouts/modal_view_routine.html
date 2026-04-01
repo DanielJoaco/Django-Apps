@@ -14,7 +14,7 @@
                         <br>&nbsp;&nbsp;&nbsp;Recomendado: {{ item.recommended_sets }} Series x {{ item.recommended_reps }} Reps
                     </div>
                     {% if item.exercise.image %}
-                        <img src="{{ item.exercise.image.url }}" alt="{{ item.exercise.name }}" class="exercise-image">
+                        <img src="{{ item.exercise.image }}" alt="{{ item.exercise.name }}" class="exercise-image">
                     {% else %}
                         <div class="no-image-placeholder">Sin imagen</div>
                     {% endif %}

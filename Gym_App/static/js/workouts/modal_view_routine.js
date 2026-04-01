@@ -1,7 +1,27 @@
- function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
+async function openModal(modalId) {
+            const modalElement = document.getElementById(modalId);
+            if (!modalElement) {
+                return;
+            }
+
+            const imageElements = Array.from(modalElement.querySelectorAll('img.exercise-image[src]'));
+            const pendingImages = imageElements.filter((img) => !img.complete);
+
+            if (pendingImages.length > 0) {
+                await Promise.all(
+                    pendingImages.map(
+                        (img) =>
+                            new Promise((resolve) => {
+                                img.addEventListener('load', resolve, { once: true });
+                                img.addEventListener('error', resolve, { once: true });
+                            }),
+                    ),
+                );
+            }
+
+            modalElement.style.display = 'flex';
             // Bloquea el scroll del fondo cuando el modal está abierto
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
         }
 
         const deleteCountdownTimers = {};
