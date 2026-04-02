@@ -145,10 +145,18 @@ class SessionExerciseEntry(models.Model):
 
 
 class StrengthSetEntry(models.Model):
+    UNIT_KG = 'kg'
+    UNIT_LBS = 'lbs'
+    WEIGHT_UNIT_CHOICES = [
+        (UNIT_KG, 'Kilogramos'),
+        (UNIT_LBS, 'Libras'),
+    ]
+
     entry = models.ForeignKey(SessionExerciseEntry, on_delete=models.CASCADE, related_name='strength_sets')
     set_number = models.PositiveIntegerField()
     reps_done = models.PositiveIntegerField()
     weight_lifted = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    weight_unit = models.CharField(max_length=5, choices=WEIGHT_UNIT_CHOICES, default=UNIT_KG)
 
     class Meta:
         ordering = ['set_number']

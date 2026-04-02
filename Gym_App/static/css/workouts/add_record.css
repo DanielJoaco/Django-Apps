@@ -145,10 +145,6 @@
   filter: grayscale(0.2);
 }
 
-.interactive-button {
-  font-size: 1.2rem;
-}
-
 .btn-remove-set {
   background-color: transparent;
   border: 0.1rem solid var(--text-warning);
@@ -255,7 +251,7 @@
 }
 
 .phase-cardio-input-row .form-control {
-  max-width: 6rem;
+  max-width: 8rem;
 }
 
 #confirm-save-no, #confirm-save-yes{
@@ -300,6 +296,15 @@
   padding: 0;
 }
 
+.exercise-item-footer{
+    display: flex;
+    gap: 2rem;
+}
+.last-set-container{
+
+  width: 50%;
+}
+
 @media (max-width: 850px){
       .exercise-image-box{
       width: 150px;
@@ -341,5 +346,9 @@
       font-size: 1.8rem;
       padding: 1rem;
     }
+
+    .data-entry-container{
+        padding: 2rem 2rem 2rem 4rem;
+     }
 
 }

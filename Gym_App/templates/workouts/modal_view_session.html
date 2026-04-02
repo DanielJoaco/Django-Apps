@@ -42,7 +42,7 @@
                                     <ul class="session-set-list">
                                         {% for set_item in entry.details.sets %}
                                             <li>
-                                                Serie {{ set_item.set_number }}: {{ set_item.reps_done }} reps{% if set_item.weight_lifted %} | Peso {{ set_item.weight_lifted|floatformat:2 }}{% endif %}
+                                                Serie {{ set_item.set_number }}: {{ set_item.reps_done }} reps{% if set_item.weight_lifted %} | Peso {{ set_item.weight_lifted|floatformat:2 }} {{ set_item.weight_unit }}{% endif %}
                                             </li>
                                         {% endfor %}
                                     </ul>

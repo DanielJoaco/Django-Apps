@@ -25,7 +25,7 @@
                         <li><a id="dashboard-link-mobile" href="{% url 'dashboard' %}">Dashboard</a></li>
                         <li class="nav-item-with-submenu">
                             <div class="nav-item-row">
-                                <a id="routines-link-mobile" href="{% url 'workouts:routines' %}" data-submenu="routines-submenu-mobile" aria-expanded="false" aria-controls="routines-submenu-mobile">Rutinas</a>
+                                <button id="routines-link-mobile" type="button" data-submenu="routines-submenu-mobile" aria-expanded="false" aria-controls="routines-submenu-mobile">Rutinas</button>
                             </div>
                             <ul id="routines-submenu-mobile" class="nav-submenu" aria-hidden="true">
                                 <li><a href="{% url 'workouts:routines' %}">Ver rutinas</a></li>
@@ -34,7 +34,7 @@
                         </li>
                         <li class="nav-item-with-submenu">
                             <div class="nav-item-row">
-                                <a id="records-link-mobile" href="{% url 'workouts:records' %}" data-submenu="records-submenu-mobile" aria-expanded="false" aria-controls="records-submenu-mobile">Registros</a>
+                                <button id="records-link-mobile" type="button" data-submenu="records-submenu-mobile" aria-expanded="false" aria-controls="records-submenu-mobile">Registros</button>
                             </div>
                             <ul id="records-submenu-mobile" class="nav-submenu" aria-hidden="true">
                                 <li><a href="{% url 'workouts:records' %}">Ver registros</a></li>
@@ -67,7 +67,7 @@
                         <li><a id="dashboard-link" href="{% url 'dashboard' %}">Dashboard</a></li>
                         <li class="nav-item-with-submenu">
                             <div class="nav-item-row">
-                                <a id="routines-link" href="{% url 'workouts:routines' %}" data-submenu="routines-submenu" aria-expanded="false" aria-controls="routines-submenu">Rutinas</a>
+                                <button id="routines-link" type="button" data-submenu="routines-submenu" aria-expanded="false" aria-controls="routines-submenu">Rutinas</button>
                             </div>
                             <ul id="routines-submenu" class="nav-submenu" aria-hidden="true">
                                 <li><a href="{% url 'workouts:routines' %}">Ver rutinas</a></li>
@@ -76,7 +76,7 @@
                         </li>
                         <li class="nav-item-with-submenu">
                             <div class="nav-item-row">
-                                <a id="records-link" href="{% url 'workouts:records' %}" data-submenu="records-submenu" aria-expanded="false" aria-controls="records-submenu">Registros</a>
+                                <button id="records-link" type="button" data-submenu="records-submenu" aria-expanded="false" aria-controls="records-submenu">Registros</button>
                             </div>
                             <ul id="records-submenu" class="nav-submenu" aria-hidden="true">
                                 <li><a href="{% url 'workouts:records' %}">Ver registros</a></li>

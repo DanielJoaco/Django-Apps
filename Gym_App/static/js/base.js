@@ -4,11 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const mobileMenuWrapper = document.getElementById('mobile-menu-wrapper');
 	const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
 	const mobileNavList = document.getElementById('mobile-nav-list');
-	const submenuLinks = document.querySelectorAll('.nav-item-with-submenu .nav-item-row > a[data-submenu]');
+	const submenuLinks = document.querySelectorAll('.nav-item-with-submenu .nav-item-row > [data-submenu]');
 	const submenuItems = document.querySelectorAll('.nav-item-with-submenu');
 	const logoTitle = document.getElementById('logo-title');
 	const logoTitleMobile = document.getElementById('logo-title-mobile');
-	const isTouchMode = window.matchMedia('(hover: none)').matches;
 
 	if (logoTitle && logoTitleMobile) {
 		logoTitle.textContent = logoTitleMobile.textContent.trim() || 'Gym App';
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const closeAllSubmenus = () => {
 		submenuItems.forEach((item) => {
-			const triggerLink = item.querySelector('.nav-item-row > a[data-submenu]');
+			const triggerLink = item.querySelector('.nav-item-row > [data-submenu]');
 			const submenu = item.querySelector('.nav-submenu');
 			item.classList.remove('is-open');
 			if (triggerLink) {
@@ -69,10 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	submenuLinks.forEach((link) => {
 		link.addEventListener('click', (event) => {
-			if (!isTouchMode) {
-				return;
-			}
-
 			event.preventDefault();
 			event.stopPropagation();
 			const parent = link.closest('.nav-item-with-submenu');
@@ -83,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			const shouldOpen = !parent.classList.contains('is-open');
 			if (!shouldOpen) {
-				window.location.href = link.href;
+				parent.classList.remove('is-open');
+				link.setAttribute('aria-expanded', 'false');
+				submenu.setAttribute('aria-hidden', 'true');
 				return;
 			}
 

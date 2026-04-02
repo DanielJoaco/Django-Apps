@@ -310,6 +310,7 @@ def _build_session_detail_payload(session):
                     'set_number': set_item.set_number,
                     'reps_done': set_item.reps_done,
                     'weight_lifted': set_item.weight_lifted,
+                    'weight_unit': set_item.weight_unit,
                 }
                 for set_item in entry.strength_sets.all()
             ]
@@ -361,7 +362,7 @@ def routines_list(request):
     return list(_get_user_routines_queryset(request.user))
 
 
-def workout_sessions_list(request):
+def workout_sessions_list(request, limit=None):
     """Colección reutilizable de sesiones para records y dashboard."""
     session_entries_queryset = (
         SessionExerciseEntry.objects
@@ -376,6 +377,9 @@ def workout_sessions_list(request):
         .prefetch_related(Prefetch('entries', queryset=session_entries_queryset))
         .order_by('-started_at', '-id')
     )
+
+    if limit is not None:
+        sessions_queryset = sessions_queryset[:limit]
 
     return [_build_session_detail_payload(session) for session in sessions_queryset]
 
@@ -484,6 +488,11 @@ def add_record_view(request):
 
             if _infer_exercise_type(exercise) != Exercise.EXERCISE_TYPE_STRENGTH:
                 return None, f"El ejercicio '{exercise.name}' debe registrarse en su bloque correspondiente."
+
+            raw_weight_unit = str(exercise_payload.get('weight_unit') or '').strip().lower()
+            if raw_weight_unit not in [StrengthSetEntry.UNIT_KG, StrengthSetEntry.UNIT_LBS]:
+                raw_weight_unit = StrengthSetEntry.UNIT_KG
+            exercise_payload['weight_unit'] = raw_weight_unit
 
             sets_payload = exercise_payload.get('sets') or []
             if not isinstance(sets_payload, list) or len(sets_payload) == 0:
@@ -691,6 +700,87 @@ def add_record_view(request):
     ).order_by(Lower('name'))
     exercises_by_id = {exercise.id: exercise for exercise in active_exercises}
 
+    latest_strength_entries = (
+        SessionExerciseEntry.objects
+        .filter(
+            session__user=request.user,
+            entry_type=SessionExerciseEntry.ENTRY_TYPE_STRENGTH,
+            phase=SessionExerciseEntry.PHASE_MAIN,
+            exercise_id__in=exercises_by_id.keys(),
+        )
+        .select_related('session')
+        .prefetch_related('strength_sets')
+        .order_by('exercise_id', '-session__started_at', '-session_id', '-id')
+    )
+
+    latest_sets_by_exercise = {}
+    for entry in latest_strength_entries:
+        if entry.exercise_id in latest_sets_by_exercise:
+            continue
+
+        latest_sets_by_exercise[entry.exercise_id] = [
+            {
+                'set_number': set_item.set_number,
+                'reps_done': set_item.reps_done,
+                'weight_lifted': str(set_item.weight_lifted) if set_item.weight_lifted is not None else '',
+                'weight_unit': set_item.weight_unit,
+            }
+            for set_item in entry.strength_sets.all()
+        ]
+
+    latest_cardio_entries = (
+        SessionExerciseEntry.objects
+        .filter(
+            session__user=request.user,
+            entry_type=SessionExerciseEntry.ENTRY_TYPE_CARDIO,
+            exercise_id__in=exercises_by_id.keys(),
+        )
+        .select_related('session', 'cardio_data')
+        .order_by('exercise_id', '-session__started_at', '-session_id', '-id')
+    )
+
+    latest_cardio_by_exercise = {}
+    for entry in latest_cardio_entries:
+        if entry.exercise_id in latest_cardio_by_exercise:
+            continue
+
+        cardio_data = getattr(entry, 'cardio_data', None)
+        if not cardio_data:
+            continue
+
+        latest_cardio_by_exercise[entry.exercise_id] = {
+            'duration_display': _format_mmss(cardio_data.duration_seconds),
+            'distance_value': str(cardio_data.distance_value),
+            'distance_unit': cardio_data.distance_unit,
+        }
+
+    latest_full_body_entries = (
+        SessionExerciseEntry.objects
+        .filter(
+            session__user=request.user,
+            entry_type=SessionExerciseEntry.ENTRY_TYPE_FULL_BODY,
+            exercise_id__in=exercises_by_id.keys(),
+        )
+        .select_related('session', 'full_body_data')
+        .order_by('exercise_id', '-session__started_at', '-session_id', '-id')
+    )
+
+    latest_full_body_by_exercise = {}
+    for entry in latest_full_body_entries:
+        if entry.exercise_id in latest_full_body_by_exercise:
+            continue
+
+        full_body_data = getattr(entry, 'full_body_data', None)
+        if not full_body_data:
+            continue
+
+        latest_full_body_by_exercise[entry.exercise_id] = {
+            'tracking_mode': full_body_data.tracking_mode,
+            'duration_display': _format_mmss(full_body_data.duration_seconds),
+            'sets_done': full_body_data.sets_done,
+            'reps_done': full_body_data.reps_done,
+        }
+
     if request.method == 'POST':
         raw_date = (request.POST.get('date') or '').strip()
         raw_hour = (request.POST.get('start_hour') or '').strip()
@@ -798,11 +888,17 @@ def add_record_view(request):
 
                     for set_item in exercise_payload.get('sets', []):
                         weight_value = set_item.get('weight') if exercise.tracks_weight else None
+                        weight_unit = (
+                            exercise_payload.get('weight_unit', StrengthSetEntry.UNIT_KG)
+                            if exercise.tracks_weight
+                            else StrengthSetEntry.UNIT_KG
+                        )
                         StrengthSetEntry.objects.create(
                             entry=entry,
                             set_number=int(set_item.get('set_number') or 1),
                             reps_done=int(set_item['value']),
                             weight_lifted=weight_value,
+                            weight_unit=weight_unit,
                         )
 
                 save_phase_entries(session, SessionExerciseEntry.PHASE_WARMUP, warmup_payload)
@@ -822,6 +918,7 @@ def add_record_view(request):
             'name': exercise.name,
             'muscle_group': exercise.muscle_group.name if exercise.muscle_group else 'General',
             'image': exercise.image,
+            'last_logged_cardio': latest_cardio_by_exercise.get(exercise.id),
         }
         for exercise in active_exercises
         if _matches_muscle_group(exercise, 'Cardiovascular')
@@ -833,6 +930,7 @@ def add_record_view(request):
             'name': exercise.name,
             'muscle_group': exercise.muscle_group.name if exercise.muscle_group else 'General',
             'image': exercise.image,
+            'last_logged_full_body': latest_full_body_by_exercise.get(exercise.id),
         }
         for exercise in active_exercises
         if _matches_muscle_group(exercise, 'Cuerpo Completo')
@@ -851,6 +949,7 @@ def add_record_view(request):
                     'tracks_weight': item.exercise.tracks_weight,
                     'recommended_sets': item.recommended_sets,
                     'recommended_reps': item.recommended_reps,
+                    'last_logged_sets': latest_sets_by_exercise.get(item.exercise.id, []),
                 }
                 for item in routine.items.all()
                 if _infer_exercise_type(item.exercise) == Exercise.EXERCISE_TYPE_STRENGTH
@@ -868,6 +967,7 @@ def add_record_view(request):
             'tracks_weight': exercise.tracks_weight,
             'recommended_sets': 3,
             'recommended_reps': 10,
+            'last_logged_sets': latest_sets_by_exercise.get(exercise.id, []),
         }
         for exercise in strength_exercises
     ]

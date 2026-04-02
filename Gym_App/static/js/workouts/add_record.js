@@ -117,6 +117,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const selectedExercises = new Map();
 
+  const normalizeLastLoggedSets = (rawLastLoggedSets) =>
+    Array.isArray(rawLastLoggedSets)
+      ? rawLastLoggedSets.map((setItem) => ({
+          set_number: Number(setItem?.set_number || 0),
+          reps_done: Number(setItem?.reps_done || 0),
+          weight_lifted: String(setItem?.weight_lifted ?? ""),
+        }))
+      : [];
+
+  const getLastLoggedSetsForExercise = (exerciseId) => {
+    const sourceExercise = exerciseById.get(String(exerciseId));
+    return normalizeLastLoggedSets(sourceExercise?.last_logged_sets);
+  };
+
   let hasUserEditedEndTime = false;
 
   let saveCountdownTimer = null;
@@ -516,6 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       selectedExercises.set(exerciseId, {
         ...exercise,
+        last_logged_sets: normalizeLastLoggedSets(exercise.last_logged_sets),
         sets: Array.isArray(exercise.sets)
           ? exercise.sets.map((setItem, index) => ({
               set_number: Number(setItem?.set_number || index + 1),
@@ -791,6 +806,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const distanceLabel =
           entry.unit === "steps" ? "Pasos" : "Distancia (km)";
 
+        const lastCardio = exercise.last_logged_cardio || null;
+        const lastCardioMarkup = lastCardio
+          ? `
+            <div class="last-set-container">
+              <span class="text-instruction last-set-title">Último registro:</span>
+              <ul class="last-set-list">
+                <li class="last-set-item">
+                  <span class="text-instruction last-set-value">Tiempo ${lastCardio.duration_display || "--:--"} - ${lastCardio.distance_value || "0"} ${lastCardio.distance_unit || ""}</span>
+                </li>
+              </ul>
+            </div>
+          `
+          : "";
+
         return `
           <div class="phase-cardio-row">
             <div class="form-group-inline phase-cardio-header-row">
@@ -803,6 +832,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
             </div>
+
+            ${lastCardioMarkup}
 
             <div class="form-group-inline phase-cardio-input-row">
               <label>Tiempo (mm:ss):</label>
@@ -970,6 +1001,31 @@ document.addEventListener("DOMContentLoaded", () => {
         const isTimeMode = entry?.tracking_mode === "TIME";
         const isSetsRepsMode = entry?.tracking_mode === "SETS_REPS";
 
+        const lastFullBody = exercise.last_logged_full_body || null;
+        let lastFullBodySummary = "";
+        if (lastFullBody) {
+          if (lastFullBody.tracking_mode === "TIME") {
+            lastFullBodySummary = `Tiempo ${lastFullBody.duration_display || "--:--"}`;
+          } else if (lastFullBody.tracking_mode === "SETS_REPS") {
+            lastFullBodySummary = `Series ${lastFullBody.sets_done || 0} - Reps ${lastFullBody.reps_done || 0}`;
+          } else {
+            lastFullBodySummary = "Solo marcar";
+          }
+        }
+
+        const lastFullBodyMarkup = lastFullBody
+          ? `
+            <div class="last-set-container">
+              <span class="text-instruction last-set-title">Último registro:</span>
+              <ul class="last-set-list">
+                <li class="last-set-item">
+                  <span class="text-instruction last-set-value">${lastFullBodySummary}</span>
+                </li>
+              </ul>
+            </div>
+          `
+          : "";
+
         return `
           <div class="phase-cardio-row">
             <div class="form-group-inline phase-stretching-row">
@@ -979,6 +1035,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 <button type="button" class="warning-button phase-remove-item" data-phase="${phaseKey}" data-type="stretching" data-exercise-id="${exercise.id}">Quitar</button>
             </div>
+
+            ${lastFullBodyMarkup}
 
             <div class="form-group-inline phase-fullbody-config-row">
               <label>Modo:</label>
@@ -1413,6 +1471,36 @@ document.addEventListener("DOMContentLoaded", () => {
                   `
         : '<span class="text-instruction">Este ejercicio no registra peso.</span>';
 
+      const lastLoggedSets = Array.isArray(exercise.last_logged_sets)
+        ? exercise.last_logged_sets
+        : [];
+
+      const lastRecordMarkup =
+        lastLoggedSets.length > 0
+          ? `
+                    <span class="text-instruction last-set-title">Último registro:</span>
+                    <ul class="last-set-list">
+                      ${lastLoggedSets
+                        .map((setItem) => {
+                          const setNumber = Number(setItem?.set_number || 0);
+                          const repsDone = Number(setItem?.reps_done || 0);
+                          const weightValue = String(
+                            setItem?.weight_lifted ?? "",
+                          ).trim();
+
+                          return `
+                            <li class="last-set-item">
+                              <span class="text-instruction last-set-label">Serie ${setNumber}:</span>
+                              <span class="text-instruction last-set-value">${repsDone}reps</span>
+                              ${exercise.tracks_weight && weightValue !== "" ? `<span class="text-instruction last-set-weight"> - ${weightValue}${exercise.weight_unit}</span>` : ""}
+                            </li>
+                          `;
+                        })
+                        .join("")}
+                    </ul>
+                  `
+          : "";
+
       li.innerHTML = `
 
                 <div class="exercise-item-content">
@@ -1456,23 +1544,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
 
 
-
-                    <div class="form-group-inline exercise-controls">
-
-                        <button type="button" class="success-button btn-add-set btn-add-set-size">+ Serie</button>
-
-                        ${weightUnitSelector}
-
-                    </div>
-
                 </div>
 
+                <div class="exercise-item-footer">
+                  <div class="last-set-container">
+                    ${lastRecordMarkup}
+                  </div>
+                  
+                  <div>
+                      <div class="form-group-inline exercise-controls">
+                          <button type="button" class="success-button btn-add-set btn-add-set-size">+ Serie</button>
+                          ${weightUnitSelector}
+                      </div>
 
-
-                <div class="button-delete-container">
-
-                    <button type="button" class="warning-button btn-remove-exercise btn-remove-exercise-size" data-remove-id="${exercise.id}">Quitar</button>
-
+                      <div class="button-delete-container">
+                          <button type="button" class="warning-button btn-remove-exercise btn-remove-exercise-size" data-remove-id="${exercise.id}">Quitar</button>
+                      </div>
+                  </div>
                 </div>
 
             `;
@@ -1658,6 +1746,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         weight_unit: "kg",
 
+        last_logged_sets: normalizeLastLoggedSets(exercise.last_logged_sets),
+
         default_value: recommendedReps,
 
         sets: buildDefaultSets(recommendedSets, recommendedReps, tracksWeight),
@@ -1671,6 +1761,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       refreshSaveState();
     }
+  };
+
+  const hydrateSelectedExercisesLastLoggedSets = () => {
+    selectedExercises.forEach((exercise) => {
+      const hasHistory =
+        Array.isArray(exercise.last_logged_sets) &&
+        exercise.last_logged_sets.length > 0;
+
+      if (hasHistory) {
+        return;
+      }
+
+      exercise.last_logged_sets = getLastLoggedSetsForExercise(exercise.id);
+    });
   };
 
   addRoutineButton?.addEventListener("click", () => {
@@ -1783,6 +1887,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupPhaseToggleListeners("cooldown");
   const initializeFromDraft = () => {
     restoreDraftSession();
+    hydrateSelectedExercisesLastLoggedSets();
     renderSelectedList();
     renderPhaseSection("warmup");
     renderPhaseSection("cooldown");
