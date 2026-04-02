@@ -4,8 +4,6 @@ if (-not $?) { return }
 if (-not $?) { return }
 pip install django
 if (-not $?) { return }
-pip install Pillow
-if (-not $?) { return }
 cd .\Gym_App
 if (-not $?) { return }
 python manage.py runserver

@@ -360,6 +360,25 @@ def routines_list(request):
     """Colección reutilizable de rutinas para inyectar en distintos templates."""
     return list(_get_user_routines_queryset(request.user))
 
+
+def workout_sessions_list(request):
+    """Colección reutilizable de sesiones para records y dashboard."""
+    session_entries_queryset = (
+        SessionExerciseEntry.objects
+        .select_related('exercise', 'exercise__muscle_group', 'cardio_data', 'full_body_data')
+        .prefetch_related('strength_sets')
+        .order_by('phase', 'order', 'id')
+    )
+
+    sessions_queryset = (
+        WorkoutSession.objects
+        .filter(user=request.user)
+        .prefetch_related(Prefetch('entries', queryset=session_entries_queryset))
+        .order_by('-started_at', '-id')
+    )
+
+    return [_build_session_detail_payload(session) for session in sessions_queryset]
+
 @login_required
 def routines_view(request):
     """Vista para listar las rutinas del usuario reutilizando la colección común."""
@@ -379,21 +398,7 @@ def delete_routine_view(request, routine_id):
 @login_required
 def records_view(request):
     """Vista para mostrar el diario de ejercicios del usuario."""
-    session_entries_queryset = (
-        SessionExerciseEntry.objects
-        .select_related('exercise', 'exercise__muscle_group', 'cardio_data', 'full_body_data')
-        .prefetch_related('strength_sets')
-        .order_by('phase', 'order', 'id')
-    )
-
-    sessions_queryset = (
-        WorkoutSession.objects
-        .filter(user=request.user)
-        .prefetch_related(Prefetch('entries', queryset=session_entries_queryset))
-        .order_by('-started_at', '-id')
-    )
-
-    sessions = [_build_session_detail_payload(session) for session in sessions_queryset]
+    sessions = workout_sessions_list(request)
 
     return render(request, 'workouts/records.html', {'workout_sessions': sessions})
 
