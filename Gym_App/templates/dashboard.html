@@ -34,26 +34,6 @@
     </article>
 
     <div class="dashboard-bottom-row">
-        <article class="list-of-routines dashboard-actions">
-            <div class="title-header">
-                <h3>Mis Rutinas</h3>
-            </div>
-
-            <div class="links-container">
-                {% if routines %}
-                    <ul class="routine-list">
-                        {% for routine in routines %}
-                            <li class="routine-item">
-                                <a class="a-link" onclick="openModal('modal-{{ routine.id }}')">• {{ routine.name }}</a>
-                                {% include 'workouts/modal_view_routine.html' %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No hay rutinas creadas aún. ¡Crea la tuya ahora!</p>
-                {% endif %}
-            </div>
-        </article>
 
         <nav class="dashboard-actions">
             <div class="title-header">
@@ -67,10 +47,10 @@
                 <a class="a-link" onclick="window.location.href='{% url 'workouts:routines' %}'">
                     • Ver Todas las Rutinas
                 </a>
-                <a class="a-link" >
+                <a class="a-link" onclick="window.location.href='{% url 'workouts:records' %}'">
                     • Ver Mi Diario de Ejercicios
                 </a>
-                <a class="a-link"  >
+                <a class="a-link" onclick="window.location.href='{% url 'workouts:add_record' %}'">
                     • Iniciar Sesión de Entrenamiento
                 </a>
             </div>

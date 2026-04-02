@@ -1,0 +1,150 @@
+/* ==========================================================================
+   1. LISTA DE SESIONES
+   ========================================================================== */
+.workout-session-list {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.workout-session-item {
+    border: 0.1rem solid var(--text-muted);
+    border-radius: 1.4rem;
+    background: linear-gradient(180deg, rgba(18, 29, 47, 0.95), rgba(13, 17, 23, 0.98));
+    padding: 1.5rem;
+    box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.25);
+}
+
+.workout-session-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.workout-session-summary h3 {
+    text-align: left;
+    margin-bottom: 0.4rem;
+}
+
+.workout-session-summary p {
+    margin: 0.2rem 0;
+}
+
+.workout-session-summary .interactive-button {
+    max-width: 16rem;
+    width: auto;
+    min-width: 12rem;
+}
+
+/* ==========================================================================
+   2. MODAL DE SESIÓN
+   ========================================================================== */
+.session-modal-content {
+    max-width: 76rem;
+}
+
+.session-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.session-meta-item {
+    border: 0.1rem solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.session-meta-label {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08rem;
+    margin-bottom: 0.3rem;
+}
+
+.session-phase-block {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 0.1rem solid rgba(255, 255, 255, 0.08);
+}
+
+.session-phase-block h3 {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.session-entry-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.session-entry-item {
+    border: 0.1rem solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.session-entry-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+}
+
+.session-entry-head span {
+    color: var(--text-muted);
+    font-size: 1.5rem;
+}
+
+.session-entry-note {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0.5rem 0 0;
+}
+
+.session-set-list {
+    list-style: none;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.session-set-list li {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   3. RESPONSIVE
+   ========================================================================== */
+@media (max-width: 650px) {
+    .workout-session-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .workout-session-summary .interactive-button {
+        width: 100%;
+        max-width: none;
+    }
+
+    .session-entry-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

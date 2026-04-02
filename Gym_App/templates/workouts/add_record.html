@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Nuevo Registro - Gym App{% endblock %}
+{% block title %}Nueva Sesión - Gym App{% endblock %}
 
-{% block logo_title %}Nuevo Registro{% endblock %}
+{% block logo_title %}Nueva Sesión{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +13,7 @@
 {% block content %}
     <section class="add-record-container">
         <div class="title-header">
-            <h2>Registrar Nueva Entrada</h2>
+            <h2>Nueva sesión de entrenamiento</h2>
         </div>
 
         <form id="add-record-form" method="post">
@@ -99,12 +99,7 @@
                     <h3>Calentamiento (Opcional)</h3>
                 </div>
 
-                <div class="form-group-inline phase-toggle-row">
-                    <input type="checkbox" id="warmup-enabled" class="form-check-input">
-                    <label for="warmup-enabled">Deseo registrar calentamiento</label>
-                </div>
-
-                <div id="warmup-phase-fields" class="phase-fields" style="display: none;">
+                <div class="phase-fields">
                     <div class="form-group-inline phase-toggle-row">
                         <input type="checkbox" id="warmup-include-cardio" class="form-check-input">
                         <label for="warmup-include-cardio">Incluir cardio</label>
@@ -156,12 +151,7 @@
                     <h3>Cardio Final y Estiramiento (Opcional)</h3>
                 </div>
 
-                <div class="form-group-inline phase-toggle-row">
-                    <input type="checkbox" id="cooldown-enabled" class="form-check-input">
-                    <label for="cooldown-enabled">Deseo registrar cardio final / estiramiento</label>
-                </div>
-
-                <div id="cooldown-phase-fields" class="phase-fields" style="display: none;">
+                <div class="phase-fields">
                     <div class="form-group-inline phase-toggle-row">
                         <input type="checkbox" id="cooldown-include-cardio" class="form-check-input">
                         <label for="cooldown-include-cardio">Incluir cardio</label>
@@ -221,7 +211,10 @@
                 <p class="text-instruction">Se actualiza automáticamente con la hora actual hasta que la edites manualmente.</p>
 
                 <div class="button-sumit-container">
-                    <button type="submit" id="btn-save-record" class="success-button">Guardar Registro</button>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <button type="submit" id="btn-save-record" class="success-button">Guardar Registro</button>
+                        <button type="button" id="btn-discard-session" class="warning-button">Descartar sesion</button>
+                    </div>
                     <p id="save-warning" class="text-warning" style="display: none; margin: 0; flex: 1;"></p>
                 </div>
 
@@ -242,10 +235,10 @@
             <span class="close-button" id="close-confirm-save">&times;</span>
 
             <div class="title-header">
-                <h3>Confirmar Registro</h3>
+                <h3 id="confirm-modal-title">Confirmar Registro</h3>
             </div>
 
-            <p>¿Deseas finalizar y guardar este registro?</p>
+            <p id="confirm-modal-message">¿Deseas finalizar y guardar este registro?</p>
 
             <div class="form-group-inline" style="justify-content: flex-end;">
                 <button type="button" id="confirm-save-yes" class="success-button confirm-submit-button" disabled>Si (3)</button>

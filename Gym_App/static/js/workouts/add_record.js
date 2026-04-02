@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hiddenInput = document.getElementById("selected_exercises_json");
 
   const saveButton = document.getElementById("btn-save-record");
+  const discardSessionButton = document.getElementById("btn-discard-session");
 
   const saveWarning = document.getElementById("save-warning");
 
@@ -48,15 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmSaveYesButton = document.getElementById("confirm-save-yes");
 
   const confirmSaveNoButton = document.getElementById("confirm-save-no");
+  const confirmModalTitle = document.getElementById("confirm-modal-title");
+  const confirmModalMessage = document.getElementById("confirm-modal-message");
 
-  const warmupEnabledToggle = document.getElementById("warmup-enabled");
+  const LOCAL_DRAFT_KEY = "gym_app_add_record_draft";
+
   const warmupIncludeCardioToggle = document.getElementById(
     "warmup-include-cardio",
   );
   const warmupIncludeStretchingToggle = document.getElementById(
     "warmup-include-stretching",
   );
-  const warmupFields = document.getElementById("warmup-phase-fields");
   const warmupCardioBlock = document.getElementById("warmup-cardio-block");
   const warmupStretchingBlock = document.getElementById(
     "warmup-stretching-block",
@@ -68,14 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const warmupWarning = document.getElementById("warmup-warning");
   const warmupHiddenInput = document.getElementById("warmup_details_json");
 
-  const cooldownEnabledToggle = document.getElementById("cooldown-enabled");
   const cooldownIncludeCardioToggle = document.getElementById(
     "cooldown-include-cardio",
   );
   const cooldownIncludeStretchingToggle = document.getElementById(
     "cooldown-include-stretching",
   );
-  const cooldownFields = document.getElementById("cooldown-phase-fields");
   const cooldownCardioBlock = document.getElementById("cooldown-cardio-block");
   const cooldownStretchingBlock = document.getElementById(
     "cooldown-stretching-block",
@@ -121,9 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let saveCountdownTimer = null;
 
   let allowFormSubmit = false;
+  let pendingModalAction = "save";
 
   const buildInitialPhaseState = () => ({
-    enabled: false,
     includeCardio: false,
     includeStretching: false,
     cardioEntries: new Map(
@@ -157,11 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
     warmup: {
       label: "calentamiento",
       toggles: {
-        enabled: warmupEnabledToggle,
         cardio: warmupIncludeCardioToggle,
         stretching: warmupIncludeStretchingToggle,
       },
-      fields: warmupFields,
       cardioBlock: warmupCardioBlock,
       stretchingBlock: warmupStretchingBlock,
       cardioList: warmupCardioList,
@@ -172,11 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
     cooldown: {
       label: "cardio final",
       toggles: {
-        enabled: cooldownEnabledToggle,
         cardio: cooldownIncludeCardioToggle,
         stretching: cooldownIncludeStretchingToggle,
       },
-      fields: cooldownFields,
       cardioBlock: cooldownCardioBlock,
       stretchingBlock: cooldownStretchingBlock,
       cardioList: cooldownCardioList,
@@ -189,6 +186,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const phaseStates = {
     warmup: buildInitialPhaseState(),
     cooldown: buildInitialPhaseState(),
+  };
+
+  const initialFormValues = {
+    date: document.getElementById("id_date")?.value || "",
+    start_hour: startHourSelect?.value || "",
+    start_minute: startMinuteSelect?.value || "",
+    start_period: startPeriodSelect?.value || "",
+    end_hour: endHourSelect?.value || "",
+    end_minute: endMinuteSelect?.value || "",
+    end_period: endPeriodSelect?.value || "",
   };
 
   const setEndTimeToNow = () => {
@@ -252,9 +259,23 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmSaveYesButton.textContent = "Si (3)";
   };
 
-  const openSaveConfirmModal = () => {
+  const openConfirmModal = (action = "save") => {
     if (!confirmSaveModal || !confirmSaveYesButton) {
       return;
+    }
+
+    pendingModalAction = action;
+
+    if (confirmModalTitle) {
+      confirmModalTitle.textContent =
+        action === "discard" ? "Descartar Sesion" : "Confirmar Registro";
+    }
+
+    if (confirmModalMessage) {
+      confirmModalMessage.textContent =
+        action === "discard"
+          ? "¿Deseas eliminar esta sesion y limpiar todos los datos guardados?"
+          : "¿Deseas finalizar y guardar este registro?";
     }
 
     confirmSaveModal.style.display = "flex";
@@ -282,6 +303,234 @@ document.addEventListener("DOMContentLoaded", () => {
 
       confirmSaveYesButton.textContent = "Si";
     }, 1000);
+  };
+
+  const parseDraftSession = () => {
+    try {
+      const rawDraft = localStorage.getItem(LOCAL_DRAFT_KEY);
+      if (!rawDraft) {
+        return null;
+      }
+
+      const parsedDraft = JSON.parse(rawDraft);
+      if (!parsedDraft || typeof parsedDraft !== "object") {
+        return null;
+      }
+
+      return parsedDraft;
+    } catch {
+      return null;
+    }
+  };
+
+  const clearDraftSession = () => {
+    const emptyDraft = {
+      session_active: false,
+      form_values: {},
+      selected_exercises: [],
+      phases: {
+        warmup: {},
+        cooldown: {},
+      },
+      updated_at: new Date().toISOString(),
+    };
+
+    localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(emptyDraft));
+  };
+
+  const persistDraftSession = () => {
+    const currentFormValues = {
+      date: document.getElementById("id_date")?.value || "",
+      start_hour: startHourSelect?.value || "",
+      start_minute: startMinuteSelect?.value || "",
+      start_period: startPeriodSelect?.value || "",
+      end_hour: endHourSelect?.value || "",
+      end_minute: endMinuteSelect?.value || "",
+      end_period: endPeriodSelect?.value || "",
+      routine_id: routineSelect?.value || "",
+      manual_exercise_id: manualExerciseSelect?.value || "",
+    };
+
+    const hasPhaseData =
+      phaseStates.warmup.includeCardio ||
+      phaseStates.warmup.includeStretching ||
+      phaseStates.cooldown.includeCardio ||
+      phaseStates.cooldown.includeStretching;
+
+    const hasFormChanges =
+      currentFormValues.date !== initialFormValues.date ||
+      currentFormValues.start_hour !== initialFormValues.start_hour ||
+      currentFormValues.start_minute !== initialFormValues.start_minute ||
+      currentFormValues.start_period !== initialFormValues.start_period ||
+      currentFormValues.end_hour !== initialFormValues.end_hour ||
+      currentFormValues.end_minute !== initialFormValues.end_minute ||
+      currentFormValues.end_period !== initialFormValues.end_period ||
+      currentFormValues.routine_id !== "" ||
+      currentFormValues.manual_exercise_id !== "";
+
+    const hasActiveSession =
+      selectedExercises.size > 0 || hasPhaseData || hasFormChanges;
+
+    const draftPayload = {
+      session_active: hasActiveSession,
+      form_values: currentFormValues,
+      selected_exercises: Array.from(selectedExercises.values()),
+      phases: {
+        warmup: serializePhaseState("warmup"),
+        cooldown: serializePhaseState("cooldown"),
+      },
+      updated_at: new Date().toISOString(),
+    };
+
+    localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(draftPayload));
+  };
+
+  const restorePhaseStateFromDraft = (phaseKey, phaseDraft) => {
+    const phaseState = phaseStates[phaseKey];
+    if (!phaseState || !phaseDraft || typeof phaseDraft !== "object") {
+      return;
+    }
+
+    phaseState.includeCardio = Boolean(phaseDraft.include_cardio);
+    phaseState.includeStretching = Boolean(phaseDraft.include_stretching);
+
+    phaseState.selectedCardioIds.clear();
+    const cardioEntries = Array.isArray(phaseDraft.cardio_entries)
+      ? phaseDraft.cardio_entries
+      : [];
+    cardioEntries.forEach((cardioEntry) => {
+      const exerciseId = String(cardioEntry?.exercise_id || "");
+      const existingEntry = phaseState.cardioEntries.get(exerciseId);
+      if (!existingEntry) {
+        return;
+      }
+
+      existingEntry.duration_mmss = String(cardioEntry.duration_mmss || "");
+      existingEntry.unit = cardioEntry.unit === "steps" ? "steps" : "km";
+      existingEntry.distance_value = String(cardioEntry.distance_value || "");
+      phaseState.selectedCardioIds.add(exerciseId);
+    });
+
+    phaseState.selectedFullBodyIds.clear();
+    const fullBodyEntries = Array.isArray(phaseDraft.full_body_entries)
+      ? phaseDraft.full_body_entries
+      : [];
+    fullBodyEntries.forEach((fullBodyEntry) => {
+      const exerciseId = String(fullBodyEntry?.exercise_id || "");
+      const existingEntry = phaseState.fullBodyEntries.get(exerciseId);
+      if (!existingEntry) {
+        return;
+      }
+
+      const trackingMode = String(fullBodyEntry.tracking_mode || "NONE");
+      existingEntry.tracking_mode = ["NONE", "TIME", "SETS_REPS"].includes(
+        trackingMode,
+      )
+        ? trackingMode
+        : "NONE";
+      existingEntry.duration_mmss = String(fullBodyEntry.duration_mmss || "");
+      existingEntry.sets_done = String(fullBodyEntry.sets_done || "");
+      existingEntry.reps_done = String(fullBodyEntry.reps_done || "");
+      phaseState.selectedFullBodyIds.add(exerciseId);
+    });
+  };
+
+  const restoreDraftSession = () => {
+    const parsedDraft = parseDraftSession();
+    if (!parsedDraft || !parsedDraft.session_active) {
+      return;
+    }
+
+    const formValues = parsedDraft.form_values || {};
+    const dateInput = document.getElementById("id_date");
+
+    const normalizeHourValue = (value) => {
+      const rawValue = String(value ?? "").trim();
+      if (!rawValue) {
+        return "";
+      }
+
+      const numericValue = Number(rawValue);
+      if (Number.isInteger(numericValue) && numericValue >= 1 && numericValue <= 12) {
+        return String(numericValue);
+      }
+
+      return rawValue;
+    };
+
+    const normalizeMinuteValue = (value) => {
+      const rawValue = String(value ?? "").trim();
+      if (!rawValue) {
+        return "";
+      }
+
+      const numericValue = Number(rawValue);
+      if (Number.isInteger(numericValue) && numericValue >= 0 && numericValue <= 59) {
+        return String(numericValue).padStart(2, "0");
+      }
+
+      return rawValue;
+    };
+
+    if (dateInput && formValues.date) {
+      dateInput.value = String(formValues.date);
+    }
+
+    if (startHourSelect && formValues.start_hour) {
+      startHourSelect.value = normalizeHourValue(formValues.start_hour);
+    }
+    if (startMinuteSelect && formValues.start_minute) {
+      startMinuteSelect.value = normalizeMinuteValue(formValues.start_minute);
+    }
+    if (startPeriodSelect && formValues.start_period) {
+      startPeriodSelect.value = String(formValues.start_period);
+    }
+
+    if (endHourSelect && formValues.end_hour) {
+      endHourSelect.value = normalizeHourValue(formValues.end_hour);
+    }
+    if (endMinuteSelect && formValues.end_minute) {
+      endMinuteSelect.value = normalizeMinuteValue(formValues.end_minute);
+    }
+    if (endPeriodSelect && formValues.end_period) {
+      endPeriodSelect.value = String(formValues.end_period);
+    }
+
+    if (routineSelect && formValues.routine_id) {
+      routineSelect.value = String(formValues.routine_id);
+    }
+    if (manualExerciseSelect && formValues.manual_exercise_id) {
+      manualExerciseSelect.value = String(formValues.manual_exercise_id);
+    }
+
+    const selectedExercisesFromDraft = Array.isArray(parsedDraft.selected_exercises)
+      ? parsedDraft.selected_exercises
+      : [];
+
+    selectedExercises.clear();
+    selectedExercisesFromDraft.forEach((exercise) => {
+      const exerciseId = String(exercise?.id || "");
+      if (!exerciseId) {
+        return;
+      }
+
+      selectedExercises.set(exerciseId, {
+        ...exercise,
+        sets: Array.isArray(exercise.sets)
+          ? exercise.sets.map((setItem, index) => ({
+              set_number: Number(setItem?.set_number || index + 1),
+              value: Number(setItem?.value || 1),
+              weight: exercise.tracks_weight
+                ? String(setItem?.weight ?? "")
+                : null,
+            }))
+          : [],
+      });
+    });
+
+    restorePhaseStateFromDraft("warmup", parsedDraft.phases?.warmup);
+    restorePhaseStateFromDraft("cooldown", parsedDraft.phases?.cooldown);
+
   };
 
   const closeSaveConfirmModal = () => {
@@ -394,7 +643,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     return {
-      enabled: phaseState.enabled,
       include_cardio: phaseState.includeCardio,
       include_stretching: phaseState.includeStretching,
       cardio_entries: selectedCardioEntries,
@@ -417,12 +665,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     }
 
-    if (!phaseState.enabled) {
-      return null;
-    }
-
     if (!phaseState.includeCardio && !phaseState.includeStretching) {
-      return `Debes elegir cardio o estiramiento en ${config.label}.`;
+      return null;
     }
 
     if (phaseState.includeCardio) {
@@ -921,9 +1165,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (config.toggles.enabled) {
-      config.toggles.enabled.checked = phaseState.enabled;
-    }
     if (config.toggles.cardio) {
       config.toggles.cardio.checked = phaseState.includeCardio;
     }
@@ -931,22 +1172,21 @@ document.addEventListener("DOMContentLoaded", () => {
       config.toggles.stretching.checked = phaseState.includeStretching;
     }
 
-    if (config.fields) {
-      config.fields.style.display = phaseState.enabled ? "block" : "none";
-    }
     if (config.cardioBlock) {
-      config.cardioBlock.style.display =
-        phaseState.enabled && phaseState.includeCardio ? "block" : "none";
+      config.cardioBlock.style.display = phaseState.includeCardio
+        ? "block"
+        : "none";
     }
     if (config.stretchingBlock) {
-      config.stretchingBlock.style.display =
-        phaseState.enabled && phaseState.includeStretching ? "block" : "none";
+      config.stretchingBlock.style.display = phaseState.includeStretching
+        ? "block"
+        : "none";
     }
 
-    if (phaseState.enabled && phaseState.includeCardio) {
+    if (phaseState.includeCardio) {
       renderPhaseCardioList(phaseKey);
     }
-    if (phaseState.enabled && phaseState.includeStretching) {
+    if (phaseState.includeStretching) {
       renderPhaseStretchingList(phaseKey);
     }
 
@@ -960,12 +1200,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!phaseState || !config) {
       return;
     }
-
-    config.toggles.enabled?.addEventListener("change", (event) => {
-      phaseState.enabled = event.target.checked;
-      renderPhaseSection(phaseKey);
-      refreshSaveState();
-    });
 
     config.toggles.cardio?.addEventListener("change", (event) => {
       phaseState.includeCardio = event.target.checked;
@@ -1060,6 +1294,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updatePhaseWarning("warmup");
     updatePhaseWarning("cooldown");
 
+    persistDraftSession();
+
     return validationError;
   };
 
@@ -1129,7 +1365,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     <div class="form-group-inline exercise-set-row" data-set-index="${index}">
 
-                        <span>Serie ${index + 1}</span>
+                        <span class="span-series">Serie ${index + 1}</span>
 
                         <input
 
@@ -1208,9 +1444,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     <div class="exercise-main-row">
-
-                      ${exercise.image ? `<img src="${exercise.image}" alt="${exercise.name}"  class="exercise-image">` : ""}
-
+                      <div class="exercise-image-box">
+                        ${exercise.image ? `<img src="${exercise.image}" alt="${exercise.name}"  class="exercise-image">` : ""}
+                      </div>
                       <div class="exercise-sets-container">
 
                         ${setRows}
@@ -1487,6 +1723,11 @@ document.addEventListener("DOMContentLoaded", () => {
     element?.addEventListener("change", refreshSaveState);
   });
 
+  document.getElementById("id_date")?.addEventListener("change", refreshSaveState);
+
+  routineSelect?.addEventListener("change", persistDraftSession);
+  manualExerciseSelect?.addEventListener("change", persistDraftSession);
+
   form?.addEventListener("submit", (event) => {
     if (allowFormSubmit) {
       return;
@@ -1500,7 +1741,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    openSaveConfirmModal();
+    openConfirmModal("save");
+  });
+
+  discardSessionButton?.addEventListener("click", () => {
+    openConfirmModal("discard");
   });
 
   closeConfirmSaveButton?.addEventListener("click", closeSaveConfirmModal);
@@ -1512,7 +1757,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (pendingModalAction === "discard") {
+      clearDraftSession();
+      closeSaveConfirmModal();
+      window.location.reload();
+      return;
+    }
+
     allowFormSubmit = true;
+
+    clearDraftSession();
 
     closeSaveConfirmModal();
 
@@ -1527,14 +1781,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupPhaseToggleListeners("warmup");
   setupPhaseToggleListeners("cooldown");
-  renderPhaseSection("warmup");
-  renderPhaseSection("cooldown");
+  const initializeFromDraft = () => {
+    restoreDraftSession();
+    renderSelectedList();
+    renderPhaseSection("warmup");
+    renderPhaseSection("cooldown");
 
-  syncHiddenInput();
+    syncHiddenInput();
 
-  updateEmptyState();
+    updateEmptyState();
 
+    refreshSaveState();
+  };
+
+  initializeFromDraft();
   startEndTimeAutoRefresh();
-
-  refreshSaveState();
 });

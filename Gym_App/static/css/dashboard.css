@@ -6,6 +6,7 @@
     gap: 5rem;
     margin-top: 2rem;
     box-sizing: border-box;
+    justify-content: space-between;
 }
 
 .dashboard-bottom-row {
@@ -23,7 +24,7 @@
 
 /* Columna Central: Resumen/Log */
 .resume-exercises-log {
-    width: 56%;
+    width: 78%;
 }
 
 /* Columna Derecha: Acciones */

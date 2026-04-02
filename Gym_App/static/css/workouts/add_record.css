@@ -45,7 +45,7 @@
 /* 1.5. Márgenes Superiores Compartidos */
 .exercise-seconds-mode-row,
 .exercise-controls {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 .data-entry-container,
@@ -169,7 +169,7 @@
 }
 
 .button-delete-container {
-  margin: 2rem;
+  margin: 0 0 3rem 0;
 }
 
 .phase-container {
@@ -267,7 +267,7 @@
     max-width: none;
 }
 
-span{
+.span-series{
   width: 10rem;
 }
 
@@ -278,15 +278,33 @@ span{
   margin-top: 2rem;
   gap: 3rem;
 }
-.exercise-image{
+.exercise-image-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 200px;
   height: 200px;
-  object-fit: cover;
+  border: none;
+  overflow: hidden;
+}
+
+.exercise-image {
+  width: 100%;
+  height: auto;
   border-radius: 1rem;
+  object-fit: contain;
+  display: block;
 }
 
 #selected-exercises-list{
   padding: 0;
+}
+
+@media (max-width: 850px){
+      .exercise-image-box{
+      width: 150px;
+      height: 150px;
+    }
 }
 
 @media (max-width: 650px) {
@@ -295,12 +313,33 @@ span{
       align-items: center;
     }
 
-    .exercise-image{
-      width: 150px;
-      height: auto;
+    .exercise-image-box{
+      width: 120px;
+      height: 120px;
+    }
+    .set-value-input{
+      width: 7rem;
     }
 
-    span{
+
+    .span-series{
       font-size: 1.6rem;
+      width: 7.5rem;
     }
+    .button-delete-container{
+      margin: 0.5rem 0 3rem 0;
+    }
+
+    .text-instruction{
+      margin-bottom: 0.5rem;
+    }
+    .exercise-main-row{
+      gap:1.5rem;
+    }
+
+    .btn-remove-set-size, .btn-add-set-size, .btn-remove-exercise-size{
+      font-size: 1.8rem;
+      padding: 1rem;
+    }
+
 }

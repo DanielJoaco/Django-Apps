@@ -1,0 +1,65 @@
+<div id="session-modal-{{ session.id }}" class="custom-modal">
+    <div class="modal-content session-modal-content">
+        <span class="close-button" onclick="closeModal('session-modal-{{ session.id }}')">&times;</span>
+
+        <div class="title-header">
+            <h2>Sesión del {{ session.date_display }}</h2>
+        </div>
+
+        <div class="session-meta-grid">
+            <div class="session-meta-item">
+                <span class="session-meta-label">Fecha</span>
+                <strong>{{ session.date_display }}</strong>
+            </div>
+            <div class="session-meta-item">
+                <span class="session-meta-label">Hora de inicio</span>
+                <strong>{{ session.start_time_display }}</strong>
+            </div>
+            <div class="session-meta-item">
+                <span class="session-meta-label">Tiempo de entrenamiento</span>
+                <strong>{{ session.duration_display }}</strong>
+            </div>
+            <div class="session-meta-item">
+                <span class="session-meta-label">Total ejercicios</span>
+                <strong>{{ session.total_exercises }}</strong>
+            </div>
+        </div>
+
+        {% for phase in session.phases %}
+            {% if phase.entries %}
+                <section class="session-phase-block">
+                    <h3>{{ phase.label }}</h3>
+                    <ul class="session-entry-list">
+                        {% for entry in phase.entries %}
+                            <li class="session-entry-item">
+                                <div class="session-entry-head">
+                                    <strong>{{ entry.exercise_name }}</strong>
+                                    <span>{{ entry.muscle_group }}</span>
+                                </div>
+
+                                {% if entry.entry_type == 'STRENGTH' %}
+                                    <p class="session-entry-note">Series ejecutadas: {{ entry.details.total_sets }} | Reps totales: {{ entry.details.total_reps }}</p>
+                                    <ul class="session-set-list">
+                                        {% for set_item in entry.details.sets %}
+                                            <li>
+                                                Serie {{ set_item.set_number }}: {{ set_item.reps_done }} reps{% if set_item.weight_lifted %} | Peso {{ set_item.weight_lifted|floatformat:2 }}{% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% elif entry.entry_type == 'CARDIO' %}
+                                    <p class="session-entry-note">Tiempo: {{ entry.details.duration_display }} | Distancia: {{ entry.details.distance_value|floatformat:2 }} {{ entry.details.distance_unit }}</p>
+                                {% elif entry.entry_type == 'FULL_BODY' %}
+                                    {% if entry.details.tracking_mode == 'TIME' %}
+                                        <p class="session-entry-note">Tiempo: {{ entry.details.duration_display }}</p>
+                                    {% elif entry.details.tracking_mode == 'SETS_REPS' %}
+                                        <p class="session-entry-note">Series: {{ entry.details.sets_done }} | Reps: {{ entry.details.reps_done }}</p>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

@@ -1,11 +1,13 @@
 # workouts/views.py
 import json
 import unicodedata
+from collections import OrderedDict
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import Prefetch
 from django.db.models.functions import Lower
 from django.utils import timezone
 from datetime import date, time, datetime
@@ -219,6 +221,141 @@ def _get_user_routines_queryset(user):
     ).order_by(Lower('name'))
 
 
+def _format_duration_display(total_seconds):
+    if total_seconds is None:
+        return 'Sin tiempo registrado'
+
+    total_seconds = max(int(total_seconds), 0)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    parts = []
+    if hours:
+        parts.append(f'{hours} h')
+    if minutes:
+        parts.append(f'{minutes} min')
+    if not parts:
+        parts.append(f'{seconds} s')
+
+    return ' '.join(parts)
+
+
+def _format_mmss(total_seconds):
+    if total_seconds is None:
+        return '00:00'
+
+    total_seconds = max(int(total_seconds), 0)
+    minutes, seconds = divmod(total_seconds, 60)
+    return f'{minutes:02d}:{seconds:02d}'
+
+
+def _build_session_detail_payload(session):
+    phase_order = {
+        SessionExerciseEntry.PHASE_WARMUP: 0,
+        SessionExerciseEntry.PHASE_MAIN: 1,
+        SessionExerciseEntry.PHASE_COOLDOWN: 2,
+    }
+
+    entries = list(session.entries.all())
+    ordered_entries = sorted(
+        entries,
+        key=lambda item: (
+            phase_order.get(item.phase, 99),
+            item.order,
+            item.id,
+        ),
+    )
+
+    phases = OrderedDict([
+        (
+            SessionExerciseEntry.PHASE_WARMUP,
+            {
+                'key': SessionExerciseEntry.PHASE_WARMUP,
+                'label': 'Calentamiento',
+                'entries': [],
+            },
+        ),
+        (
+            SessionExerciseEntry.PHASE_MAIN,
+            {
+                'key': SessionExerciseEntry.PHASE_MAIN,
+                'label': 'Fuerza',
+                'entries': [],
+            },
+        ),
+        (
+            SessionExerciseEntry.PHASE_COOLDOWN,
+            {
+                'key': SessionExerciseEntry.PHASE_COOLDOWN,
+                'label': 'Cardio Final',
+                'entries': [],
+            },
+        ),
+    ])
+
+    for entry in ordered_entries:
+        entry_payload = {
+            'id': entry.id,
+            'exercise_name': entry.exercise.name,
+            'muscle_group': entry.exercise.muscle_group.name if entry.exercise.muscle_group else 'General',
+            'entry_type': entry.entry_type,
+            'phase': entry.phase,
+            'phase_label': entry.get_phase_display(),
+            'order': entry.order,
+        }
+
+        if entry.entry_type == SessionExerciseEntry.ENTRY_TYPE_STRENGTH:
+            sets_payload = [
+                {
+                    'set_number': set_item.set_number,
+                    'reps_done': set_item.reps_done,
+                    'weight_lifted': set_item.weight_lifted,
+                }
+                for set_item in entry.strength_sets.all()
+            ]
+            entry_payload['details'] = {
+                'kind': 'strength',
+                'sets': sets_payload,
+                'total_sets': len(sets_payload),
+                'total_reps': sum(set_item['reps_done'] for set_item in sets_payload),
+            }
+        elif entry.entry_type == SessionExerciseEntry.ENTRY_TYPE_CARDIO:
+            cardio_data = getattr(entry, 'cardio_data', None)
+            entry_payload['details'] = {
+                'kind': 'cardio',
+                'duration_display': _format_mmss(cardio_data.duration_seconds if cardio_data else None),
+                'distance_value': cardio_data.distance_value if cardio_data else None,
+                'distance_unit': cardio_data.distance_unit if cardio_data else '',
+            }
+        elif entry.entry_type == SessionExerciseEntry.ENTRY_TYPE_FULL_BODY:
+            full_body_data = getattr(entry, 'full_body_data', None)
+            entry_payload['details'] = {
+                'kind': 'full_body',
+                'tracking_mode': full_body_data.tracking_mode if full_body_data else FullBodyEntry.TRACK_NONE,
+                'duration_display': _format_mmss(full_body_data.duration_seconds if full_body_data else None),
+                'sets_done': full_body_data.sets_done if full_body_data else None,
+                'reps_done': full_body_data.reps_done if full_body_data else None,
+            }
+
+        phases[entry.phase]['entries'].append(entry_payload)
+
+    session_started = timezone.localtime(session.started_at) if session.started_at else None
+    session_ended = timezone.localtime(session.ended_at) if session.ended_at else None
+    training_seconds = None
+    if session_started and session_ended:
+        training_seconds = int((session_ended - session_started).total_seconds())
+
+    return {
+        'id': session.id,
+        'started_at_display': session_started.strftime('%d/%m/%Y %H:%M') if session_started else '',
+        'date_display': session_started.strftime('%d/%m/%Y') if session_started else '',
+        'start_time_display': session_started.strftime('%I:%M %p') if session_started else '',
+        'duration_display': _format_duration_display(training_seconds),
+        'total_exercises': len(ordered_entries),
+        'phases': list(phases.values()),
+    }
+
+
 def routines_list(request):
     """Colección reutilizable de rutinas para inyectar en distintos templates."""
     return list(_get_user_routines_queryset(request.user))
@@ -242,34 +379,23 @@ def delete_routine_view(request, routine_id):
 @login_required
 def records_view(request):
     """Vista para mostrar el diario de ejercicios del usuario."""
-    strength_entries = (
+    session_entries_queryset = (
         SessionExerciseEntry.objects
-        .filter(
-            session__user=request.user,
-            entry_type=SessionExerciseEntry.ENTRY_TYPE_STRENGTH,
-        )
-        .select_related('exercise', 'session')
+        .select_related('exercise', 'exercise__muscle_group', 'cardio_data', 'full_body_data')
         .prefetch_related('strength_sets')
-        .order_by('-session__started_at', '-id')[:50]
+        .order_by('phase', 'order', 'id')
     )
 
-    records = []
-    for entry in strength_entries:
-        sets = list(entry.strength_sets.all())
-        sets_count = len(sets)
-        reps_total = sum(set_item.reps_done for set_item in sets)
-        weights = [set_item.weight_lifted for set_item in sets if set_item.weight_lifted is not None]
-        max_weight = max(weights) if weights else Decimal('0')
+    sessions_queryset = (
+        WorkoutSession.objects
+        .filter(user=request.user)
+        .prefetch_related(Prefetch('entries', queryset=session_entries_queryset))
+        .order_by('-started_at', '-id')
+    )
 
-        records.append({
-            'exercise': entry.exercise,
-            'date': timezone.localtime(entry.session.started_at).date(),
-            'sets': sets_count,
-            'reps': reps_total,
-            'weight': max_weight,
-        })
+    sessions = [_build_session_detail_payload(session) for session in sessions_queryset]
 
-    return render(request, 'workouts/records.html', {'recent_exercises': records})
+    return render(request, 'workouts/records.html', {'workout_sessions': sessions})
 
 @login_required
 def add_record_view(request):
@@ -392,18 +518,11 @@ def add_record_view(request):
         if not isinstance(payload, dict):
             return f'Formato invalido para {phase_label}.', {}
 
-        enabled = bool(payload.get('enabled'))
         include_cardio = bool(payload.get('include_cardio'))
         include_stretching = bool(payload.get('include_stretching'))
 
-        if not enabled:
-            return None, payload
-
         if not include_cardio and not include_stretching:
-            return (
-                f'Debes seleccionar al menos cardio o estiramiento en {phase_label}.',
-                payload,
-            )
+            return None, payload
 
         if include_cardio:
             cardio_entries = payload.get('cardio_entries') or []
@@ -519,7 +638,7 @@ def add_record_view(request):
         return None, payload
 
     def save_phase_entries(session, phase, payload):
-        if not payload.get('enabled'):
+        if not payload.get('include_cardio') and not payload.get('include_stretching'):
             return
 
         order = 1

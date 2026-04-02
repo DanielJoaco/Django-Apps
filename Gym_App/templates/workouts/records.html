@@ -7,6 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="{% static 'css/workouts/records.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -14,26 +15,41 @@
 
     <article class="resume-exercises-log">
         <div class="title-header">
-            <h3>Mi Registros</h3>
+            <h3>Mis sesiones</h3>
         </div>
 
-        {% if recent_exercises %}
-            <ul class="exercise-log-list">
-                {% for log in recent_exercises %}
-                    <li class="exercise-log-item">
-                        <strong>{{ log.exercise.name }}</strong> - {{ log.date|date:"d M Y" }}
-                        <br>
-                        Series: {{ log.sets }} | Reps: {{ log.reps }} | Peso: {{ log.weight }} kg
+        {% if workout_sessions %}
+            <ul class="workout-session-list">
+                {% for session in workout_sessions %}
+                    <li class="workout-session-item">
+                        <div class="workout-session-summary">
+                            <div>
+                                <h3>{{ session.date_display }}</h3>
+                                <p>Tiempo de entrenamiento: {{ session.duration_display }}</p>
+                                <p>Total ejercicios: {{ session.total_exercises }}</p>
+                            </div>
+
+                            <button class="interactive-button" type="button" onclick="openModal('session-modal-{{ session.id }}')">
+                                Ver más
+                            </button>
+                        </div>
                     </li>
+
+                    {% include 'workouts/modal_view_session.html' %}
                 {% endfor %}
             </ul>
         {% else %}
-            <p>Aún no has registrado ningún ejercicio. ¡Empieza a registrar tus entrenamientos para verlos aquí!</p>
+            <p>Aún no has registrado ningún entrenamiento. ¡Empieza a registrar tus sesiones para verlas aquí!</p>
         {% endif %}
     </article>
 
-    <button class="success-button" onclick="window.location.href='{% url 'workouts:add_record' %}'">
+    <button id="add-record-entry-button" class="success-button" onclick="window.location.href='{% url 'workouts:add_record' %}'">
         Añadir Nuevo Registro
     </button>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/workouts/modal_view_routine.js' %}"></script>
+    <script src="{% static 'js/workouts/records.js' %}"></script>
 {% endblock %}

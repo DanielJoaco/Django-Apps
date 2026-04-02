@@ -19,6 +19,32 @@
     <header>
         <nav>
             <div id="logo-section">
+                <div id="mobile-menu-wrapper">
+                    <button id="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-nav-list">☰</button>
+                    <ul id="mobile-nav-list" aria-hidden="true">
+                        <li><a id="dashboard-link-mobile" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item-with-submenu">
+                            <div class="nav-item-row">
+                                <a id="routines-link-mobile" href="{% url 'workouts:routines' %}" data-submenu="routines-submenu-mobile" aria-expanded="false" aria-controls="routines-submenu-mobile">Rutinas</a>
+                            </div>
+                            <ul id="routines-submenu-mobile" class="nav-submenu" aria-hidden="true">
+                                <li><a href="{% url 'workouts:routines' %}">Ver rutinas</a></li>
+                                <li><a href="{% url 'workouts:create_routine' %}">Crear rutina</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item-with-submenu">
+                            <div class="nav-item-row">
+                                <a id="records-link-mobile" href="{% url 'workouts:records' %}" data-submenu="records-submenu-mobile" aria-expanded="false" aria-controls="records-submenu-mobile">Registros</a>
+                            </div>
+                            <ul id="records-submenu-mobile" class="nav-submenu" aria-hidden="true">
+                                <li><a href="{% url 'workouts:records' %}">Ver registros</a></li>
+                                <li><a href="{% url 'workouts:add_record' %}">Nuevo registro</a></li>
+                            </ul>
+                        </li>
+                        <li><a id="weight-link-mobile" href="#">Masa</a></li>
+                    </ul>
+                </div>
+
                 <a href="{% url 'dashboard' %}" class="logo-link">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 811 884" class="nav-logo">
                         <g transform="translate(0,884) scale(0.1,-0.1)" fill="currentColor">
@@ -30,21 +56,37 @@
                     </svg>
                     
                 </a>
-                <h3 id="logo-title">{% block logo_title %}Gym App{% endblock %}</h3>
+                <h3 id="logo-title">Gym App</h3>
             </div>
 
+            <div id="nav-center">
+                <h3 id="logo-title-mobile">{% block logo_title %}Gym App{% endblock %}</h3>
 
-            <ul id="nav-list">
-                <div class="nav-links">
-                    <li><a id="dashboard-link" href="{% url 'dashboard' %}">Dashboard</a></li>
-                    <li><a id="routines-link" href="{% url 'workouts:routines' %}">Rutinas</a></li>
-                    <li><a id="records-link" href="{% url 'workouts:records' %}">Registros</a></li>
-                    <li><a id="weight-link" href="#">Masa</a></li>
-                    <li>
-                        
-                    </li>
-                </div>                
-            </ul>
+                <ul id="nav-list">
+                    <div class="nav-links">
+                        <li><a id="dashboard-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item-with-submenu">
+                            <div class="nav-item-row">
+                                <a id="routines-link" href="{% url 'workouts:routines' %}" data-submenu="routines-submenu" aria-expanded="false" aria-controls="routines-submenu">Rutinas</a>
+                            </div>
+                            <ul id="routines-submenu" class="nav-submenu" aria-hidden="true">
+                                <li><a href="{% url 'workouts:routines' %}">Ver rutinas</a></li>
+                                <li><a href="{% url 'workouts:create_routine' %}">Crear rutina</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item-with-submenu">
+                            <div class="nav-item-row">
+                                <a id="records-link" href="{% url 'workouts:records' %}" data-submenu="records-submenu" aria-expanded="false" aria-controls="records-submenu">Registros</a>
+                            </div>
+                            <ul id="records-submenu" class="nav-submenu" aria-hidden="true">
+                                <li><a href="{% url 'workouts:records' %}">Ver registros</a></li>
+                                <li><a href="{% url 'workouts:add_record' %}">Nuevo registro</a></li>
+                            </ul>
+                        </li>
+                        <li><a id="weight-link" href="#">Masa</a></li>
+                    </div>                
+                </ul>
+            </div>
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <button id="logout-button" type="submit">Cerrar Sesión</button>
