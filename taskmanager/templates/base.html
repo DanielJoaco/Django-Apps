@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Task Manager - Gestor de Tareas{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a href="{% url 'index' %}" class="link">Inicio</a></li>
+                <li><a href="{% url 'task_list' %}" class="link">Tareas</a></li>
+                <li><a href="{% url 'task_create' %}" class="link">Crear Tarea</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="content">
+    {% block content %}
+    {% endblock %}
+    </section>
+    <footer>
+        <p id="footer-text">&copy; 2026 Task Manager by <a href="https://github.com/danieljoaco" class="link" target="_blank">Daniel Joaco</a>.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Tareas - Task Manager{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/tasks/tasks.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<h1>Lista de tareas</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Completado</th>
+            <th>Fecha de creación</th>
+            <th>Acciones</th>
+        </tr> 
+    </thead>
+    <tbody>
+    {% for task in tasks %}
+        <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td class="status {% if task.completed %}status-completed{% else %}status-pending{% endif %}">
+                    {{ task.completed|yesno:"Sí,No" }}
+            </td>
+            <td>{{ task.created_at }}</td>
+            <td>
+                <button class="btn-action btn" onclick="location.href='{% url 'task_update' task.id %}'">Editar</button>
+                <button class="btn-warning btn" >Eliminar</button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<button class="btn btn-action btn-create" onclick="location.href='{% url 'task_create' %}'">Crear nueva tarea</button>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if action == 'crear' %}Crear tarea{% else %}Editar tarea{% endif %} - Task Manager{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/tasks/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% if action == 'crear' %}
+    <h1>Crear tarea</h1>
+{% else %}
+    <h1>Editar tarea</h1>
+{% endif %}
+
+<form method="post" class="task-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if action == 'crear' %}
+        <button type="submit" class="btn btn-action">Crear tarea</button>
+    {% else %}
+        <button type="submit" class="btn btn-action">Guardar cambios</button>
+    {% endif %}
+</form>
+
+{% endblock %}

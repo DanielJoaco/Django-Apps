@@ -1,0 +1,109 @@
+html{
+    font-size: 62.5%;
+}
+
+:root{
+    --font: "IBM Plex Serif", serif;
+
+    --bg-primary: #B0E4CC;
+    --bg-secondary: #285A48;
+    --bg-third : #408A71;
+
+    --text-primary: #091413;
+    --text-secondary: #B0E4CC;
+    --text-hover: #091413;
+
+    --btn-action: #408A71;
+    --btn-warning: #E43636;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-primary);
+    height: 100vh;
+    margin: 0;
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+}
+
+h1{font-size: 3.2rem;}
+h2{font-size: 2.4rem;}
+h3{font-size: 1.8rem;}
+h1, h2, h3, th{text-align: center;}
+p, label, input, button, textarea, ul, li, a, th, td{font-size: 1.6rem;}
+
+h1, h2, h3, p, label, input, button, textarea, ul, li, a, button, th{
+    color: var(--text-primary);
+    font-family: var(--font);
+    margin: 0;
+    letter-spacing: 0.03rem;
+    line-height: 1.6;
+}
+
+.navbar{
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    background-color: var(--bg-secondary);
+    border-bottom: 0.1rem solid var(--btn-action);
+}
+.nav-list {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+}
+
+.link{
+    color: var(--text-secondary);
+}
+
+.link:hover{
+    color: var(--text-hover);
+    transition: color 0.3s ease;
+}
+
+.content{
+    flex: 1;
+    padding: 2rem;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    min-width: 9rem;
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--text-hover);
+}
+
+.btn-action {
+    background-color: var(--btn-action);
+    color: var(--text-secondary);
+}
+
+.btn-warning {
+    background-color: var(--btn-warning);
+    color: var(--text-secondary);
+}
+
+footer{
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--bg-secondary);
+}
+
+#footer-text{
+    color: var(--text-secondary);
+
+}

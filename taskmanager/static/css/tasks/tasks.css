@@ -1,0 +1,97 @@
+table {
+	width: min(110rem, 100%);
+	margin: 2rem auto;
+	border-collapse: collapse;
+	border: 0.2rem solid var(--bg-secondary);
+	background-color: #d2efe1;
+}
+
+thead tr {
+	background-color: var(--bg-secondary);
+}
+
+thead th {
+	color: var(--text-secondary);
+}
+
+th,
+td {
+	border: 0.1rem solid var(--bg-third);
+	padding: 1rem 1.4rem;
+	text-align: center;
+	vertical-align: middle;
+}
+
+tbody tr:nth-child(odd) {
+	background-color: #eaf7f1;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #cfe9dd;
+}
+
+.status {
+	font-weight: 600;
+}
+
+.status-completed {
+	background-color: #1f7a56;
+	color: #f2fff9;
+}
+
+.status-pending {
+	background-color: #ad2f2f;
+	color: #fff4f4;
+}
+
+.btn-create {
+    display: block;
+    margin: 5rem auto;
+}
+
+.task-form {
+	width: min(68rem, 100%);
+	margin: 3rem auto;
+	padding: 2.4rem;
+	background-color: #d2efe1;
+	border: 0.2rem solid var(--bg-secondary);
+	border-radius: 0.8rem;
+	box-sizing: border-box;
+}
+
+.task-form p {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+	margin-bottom: 1.6rem;
+}
+
+.task-form label {
+	font-weight: 600;
+}
+
+.task-form input[type="text"],
+.task-form textarea {
+	width: 100%;
+	padding: 0.9rem 1rem;
+	border: 0.1rem solid var(--bg-third);
+	border-radius: 0.5rem;
+	background-color: #f6fffb;
+	box-sizing: border-box;
+}
+
+.task-form textarea {
+	min-height: 12rem;
+	resize: vertical;
+}
+
+.task-form input[type="checkbox"] {
+	width: 1.8rem;
+	height: 1.8rem;
+	accent-color: var(--bg-secondary);
+}
+
+.task-form .btn {
+	display: block;
+	margin: 2.2rem auto 0;
+}
