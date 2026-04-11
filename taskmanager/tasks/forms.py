@@ -12,3 +12,8 @@ class TaskForm(forms.ModelForm):
             'description': 'Descripción',
             'completed': 'Completada',
         }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'completed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
