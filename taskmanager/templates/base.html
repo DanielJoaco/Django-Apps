@@ -16,7 +16,7 @@
         <nav class="navbar">
             <ul class="nav-list">
                 <li><a href="{% url 'index' %}" class="link">Inicio</a></li>
-                <li><a href="{% url 'task_list' %}" class="link">Tareas</a></li>
+                <li><a href="{% url 'tasks_list' %}" class="link">Tareas</a></li>
                 <li><a href="{% url 'task_create' %}" class="link">Crear Tarea</a></li>
             </ul>
         </nav>
@@ -28,5 +28,7 @@
     <footer>
         <p id="footer-text">&copy; 2026 Task Manager by <a href="https://github.com/danieljoaco" class="link" target="_blank">Daniel Joaco</a>.</p>
     </footer>
+
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

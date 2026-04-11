@@ -1,0 +1,38 @@
+.modal {
+	position: fixed;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 2rem;
+	z-index: 1000;
+}
+
+.modal.is-open {
+	display: flex;
+}
+
+.modal-content {
+	width: min(46rem, 100%);
+	background-color: #d2efe1;
+	border: 0.2rem solid var(--bg-secondary);
+	border-radius: 0.8rem;
+	padding: 2rem;
+	position: relative;
+}
+
+.close {
+	position: absolute;
+	top: 1rem;
+	right: 1.4rem;
+	font-size: 2.2rem;
+	cursor: pointer;
+}
+
+#deleteTaskForm {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	margin-top: 1.6rem;
+}

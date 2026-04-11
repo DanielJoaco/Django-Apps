@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Tareas - Task Manager{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/tasks/tasks.css' %}">
+<link rel="stylesheet" href="{% static 'css/tasks/modal.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<h1>Lista de tareas</h1>
+
+{% if tasks.count == 0 %}
+    <p>No hay tareas creadas. ¡Crea tu primera tarea!</p>
+    {% else %}
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Completado</th>
+                <th>Fecha de creación</th>
+                <th>Acciones</th>
+            </tr> 
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.id }}</td>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td class="status {% if task.completed %}status-completed{% else %}status-pending{% endif %}">
+                        {{ task.completed|yesno:"Sí,No" }}
+                </td>
+                <td>{{ task.created_at }}</td>
+                <td>
+                    <button class="btn-action btn" onclick="location.href='{% url 'task_update' task.id %}'">Editar</button>
+                    <button class="btn-warning btn" onclick="openDeleteModal(this.dataset.deleteUrl)" data-delete-url="{% url 'task_delete' task.id %}">Eliminar</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+<button class="btn btn-action btn-create" onclick="location.href='{% url 'task_create' %}'">Crear nueva tarea</button>
+<div id="deleteModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <h2>Confirmar eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar esta tarea?</p>
+        <form id="deleteTaskForm" method="post">
+            {% csrf_token %}
+            <button id="confirmDelete" type="submit" class="btn-warning btn">Sí, eliminar</button>
+            <button id="cancelDelete" type="button" class="btn btn-action" onclick="closeDeleteModal()">No, cancelar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/tasks/delete-modal.js' %}"></script>
+{% endblock %}
