@@ -20,8 +20,8 @@
             <p class="eyebrow">Detalle del ejercicio</p>
             <h1>{{ exercise.name }}</h1>
             <ul class="detail-list">
-                <li><strong>Patrón:</strong> {{ exercise.pattern.name }}</li>
-                <li><strong>Grupo muscular:</strong> {{ exercise.muscle_group.name }}</li>
+                <li><strong>Patrón:</strong> {{ exercise.pattern_name }}</li>
+                <li><strong>Grupo muscular:</strong> {{ exercise.muscle_group_name }}</li>
                 <li><strong>Agonista:</strong> {{ exercise.agonist.name }}</li>
                 <li><strong>Tipo:</strong> {{ exercise.get_exercise_type_display }}</li>
                 <li><strong>Usa peso:</strong> {% if exercise.tracks_weight %}Sí{% else %}No{% endif %}</li>

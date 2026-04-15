@@ -51,7 +51,7 @@
 
                 <div class="exercise-body">
                     <h2>{{ exercise.name }}</h2>
-                    <p class="exercise-meta">{{ exercise.muscle_group.name }}</p>
+                    <p class="exercise-meta">{{ exercise.muscle_group_name }}</p>
                     <p class="exercise-meta">{{ exercise.agonist.name }}</p>
                     <a class="details-button" href="{% url 'excercise' %}?id={{ exercise.id }}">Ver más</a>
                 </div>

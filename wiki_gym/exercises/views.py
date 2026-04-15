@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import F, Q
 from django.http import Http404
 from django.contrib import messages
 from django.contrib.auth import login as auth_login, logout as auth_logout
@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from .models import Exercise
 from .forms import ExerciseForm
@@ -22,9 +23,23 @@ def _build_query_string(params):
 	return urlencode(clean_params)
 
 
+def _exercise_queryset():
+	return Exercise.objects.select_related('agonist__muscle_group__pattern').annotate(
+		pattern_name=F('agonist__muscle_group__pattern__name'),
+		muscle_group_name=F('agonist__muscle_group__name'),
+	)
+
+
+def _safe_next_url(request):
+	next_url = request.POST.get('next') or request.GET.get('next')
+	if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+		return next_url
+	return reverse('panel_list')
+
+
 @login_required(login_url='login')
 def index(request):
-	exercises = Exercise.objects.select_related('pattern', 'muscle_group', 'agonist').filter(is_active=True)
+	exercises = _exercise_queryset().filter(is_active=True)
 
 	search_query = request.GET.get('q', '').strip()
 	selected_type = request.GET.get('type', '').strip()
@@ -33,8 +48,8 @@ def index(request):
 		exercises = exercises.filter(
 			Q(name__icontains=search_query)
 			| Q(description__icontains=search_query)
-			| Q(pattern__name__icontains=search_query)
-			| Q(muscle_group__name__icontains=search_query)
+			| Q(agonist__muscle_group__pattern__name__icontains=search_query)
+			| Q(agonist__muscle_group__name__icontains=search_query)
 			| Q(agonist__name__icontains=search_query)
 		)
 
@@ -70,7 +85,7 @@ def exercise_detail(request, id=None):
 		raise Http404('No se indico el ejercicio.')
 
 	exercise = get_object_or_404(
-		Exercise.objects.select_related('pattern', 'muscle_group', 'agonist', 'created_by'),
+		_exercise_queryset().select_related('created_by'),
 		pk=exercise_id,
 	)
 	return render(request, 'excercise/excercise.html', {'exercise': exercise})
@@ -100,7 +115,7 @@ def user_logout(request):
 
 @login_required(login_url='login')
 def panel_list(request):
-	exercises = Exercise.objects.select_related('pattern', 'muscle_group', 'agonist').all()
+	exercises = _exercise_queryset().all()
 
 	search_query = request.GET.get('q', '').strip()
 	selected_type = request.GET.get('type', '').strip()
@@ -111,6 +126,8 @@ def panel_list(request):
 			Q(name__icontains=search_query)
 			| Q(description__icontains=search_query)
 			| Q(agonist__name__icontains=search_query)
+			| Q(agonist__muscle_group__name__icontains=search_query)
+			| Q(agonist__muscle_group__pattern__name__icontains=search_query)
 		)
 
 	if selected_type in dict(Exercise.EXERCISE_TYPE_CHOICES):
@@ -154,11 +171,11 @@ def exercise_create(request):
 			exercise.created_by = request.user
 			exercise.save()
 			messages.success(request, f'Ejercicio "{exercise.name}" creado exitosamente.')
-			return redirect('panel_list')
+			return redirect(_safe_next_url(request))
 	else:
 		form = ExerciseForm()
 
-	context = {'form': form, 'action': 'Crear'}
+	context = {'form': form, 'action': 'Crear', 'next_url': _safe_next_url(request)}
 	return render(request, 'panel/exercise_form.html', context)
 
 
@@ -171,22 +188,22 @@ def exercise_edit(request, id):
 		if form.is_valid():
 			exercise = form.save()
 			messages.success(request, f'Ejercicio "{exercise.name}" actualizado exitosamente.')
-			return redirect('panel_list')
+			return redirect(_safe_next_url(request))
 	else:
 		form = ExerciseForm(instance=exercise)
 
-	context = {'form': form, 'action': 'Editar', 'exercise': exercise}
+	context = {'form': form, 'action': 'Editar', 'exercise': exercise, 'next_url': _safe_next_url(request)}
 	return render(request, 'panel/exercise_form.html', context)
 
 
 @login_required(login_url='login')
 def exercise_delete(request, id):
-	exercise = get_object_or_404(Exercise, pk=id)
+	exercise = get_object_or_404(_exercise_queryset(), pk=id)
 	if request.method == 'POST':
 		exercise_name = exercise.name
 		exercise.delete()
 		messages.success(request, f'Ejercicio "{exercise_name}" eliminado exitosamente.')
-		return redirect('panel_list')
+		return redirect(_safe_next_url(request))
 
-	context = {'exercise': exercise}
+	context = {'exercise': exercise, 'next_url': _safe_next_url(request)}
 	return render(request, 'panel/exercise_confirm_delete.html', context)

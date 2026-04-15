@@ -41,19 +41,3 @@ class ExerciseForm(forms.ModelForm):
             'tracks_weight': 'Registra peso',
             'is_active': 'Activo',
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        if self.cleaned_data.get('agonist'):
-            self.cleaned_data['muscle_group'] = self.cleaned_data['agonist'].muscle_group
-            self.cleaned_data['pattern'] = self.cleaned_data['agonist'].muscle_group.pattern
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if self.cleaned_data.get('agonist'):
-            instance.muscle_group = self.cleaned_data['agonist'].muscle_group
-            instance.pattern = self.cleaned_data['agonist'].muscle_group.pattern
-        if commit:
-            instance.save()
-        return instance

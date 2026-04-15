@@ -44,24 +44,35 @@ class ExerciseAdmin(admin.ModelAdmin):
 		"tracks_weight",
 		"is_active",
 	)
-	list_select_related = ("pattern", "muscle_group", "agonist")
+	list_select_related = ("agonist__muscle_group__pattern",)
 	list_display = (
 		"name",
 		"exercise_type",
-		"pattern",
-		"muscle_group",
+		"get_pattern",
+		"get_muscle_group",
 		"agonist",
 		"tracks_weight",
 		"is_active",
 	)
-	list_filter = ("exercise_type", "pattern", "muscle_group", "is_active")
-	search_fields = ("name", "description", "pattern__name", "muscle_group__name", "agonist__name")
+	list_filter = ("exercise_type", "agonist__muscle_group__pattern", "agonist__muscle_group", "is_active")
+	search_fields = (
+		"name",
+		"description",
+		"agonist__muscle_group__pattern__name",
+		"agonist__muscle_group__name",
+		"agonist__name",
+	)
 	autocomplete_fields = ("agonist",)
 
+	@admin.display(description="Division")
+	def get_pattern(self, obj):
+		return obj.agonist.muscle_group.pattern
+
+	@admin.display(description="Grupo muscular")
+	def get_muscle_group(self, obj):
+		return obj.agonist.muscle_group
+
 	def save_model(self, request, obj, form, change):
-		if obj.agonist_id:
-			obj.muscle_group = obj.agonist.muscle_group
-			obj.pattern = obj.agonist.muscle_group.pattern
 		if not obj.created_by_id:
 			obj.created_by = request.user
 		super().save_model(request, obj, form, change)

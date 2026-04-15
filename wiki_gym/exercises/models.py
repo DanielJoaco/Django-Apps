@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -73,16 +72,6 @@ class Exercise(models.Model):
 
     name = models.CharField(max_length=150, unique=True)
     description = models.TextField(blank=True)
-    pattern = models.ForeignKey(
-        MovementPattern,
-        on_delete=models.PROTECT,
-        related_name="exercises",
-    )
-    muscle_group = models.ForeignKey(
-        MuscleGroup,
-        on_delete=models.PROTECT,
-        related_name="exercises",
-    )
     agonist = models.ForeignKey(
         Agonist,
         on_delete=models.PROTECT,
@@ -108,20 +97,6 @@ class Exercise(models.Model):
 
     class Meta:
         ordering = ["name"]
-
-    def clean(self):
-        errors = {}
-
-        if self.muscle_group_id and self.pattern_id:
-            if self.muscle_group.pattern_id != self.pattern_id:
-                errors["muscle_group"] = "El grupo muscular debe pertenecer a la division seleccionada."
-
-        if self.agonist_id and self.muscle_group_id:
-            if self.agonist.muscle_group_id != self.muscle_group_id:
-                errors["agonist"] = "El agonista debe pertenecer al grupo muscular seleccionado."
-
-        if errors:
-            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         if self.exercise_type == self.EXERCISE_TYPE_CARDIO:

@@ -17,15 +17,16 @@
 
         <div class="exercise-info">
             <p><strong>Agonista:</strong> {{ exercise.agonist.name }}</p>
-            <p><strong>Grupo muscular:</strong> {{ exercise.muscle_group.name }}</p>
+            <p><strong>Grupo muscular:</strong> {{ exercise.muscle_group_name }}</p>
             <p><strong>Tipo:</strong> {{ exercise.get_exercise_type_display }}</p>
         </div>
 
         <form method="post" class="confirm-form">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next_url }}">
             <div class="form-actions">
                 <button type="submit" class="btn-danger">Eliminar</button>
-                <a href="{% url 'panel_list' %}" class="btn-secondary">Cancelar</a>
+                <a href="{{ next_url }}" class="btn-secondary">Cancelar</a>
             </div>
         </form>
     </article>

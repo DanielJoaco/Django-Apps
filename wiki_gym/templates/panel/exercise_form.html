@@ -16,6 +16,7 @@
 <div class="form-container">
     <form method="post" enctype="multipart/form-data" class="exercise-form">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
 
         {% if form.non_field_errors %}
             <div class="error-messages">
@@ -106,7 +107,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn-primary">{{ action }}</button>
-            <a href="{% url 'panel_list' %}" class="btn-secondary">Cancelar</a>
+            <a href="{{ next_url }}" class="btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

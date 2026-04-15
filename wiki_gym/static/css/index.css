@@ -35,13 +35,12 @@
 }
 
 .exercise-image-wrap {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 4;
     background: rgba(255, 255, 255, 0.03);
 }
 
 .exercise-image-wrap img {
     width: 100%;
-    height: 100%;
     object-fit: cover;
     display: block;
 }

@@ -15,7 +15,7 @@
 </section>
 
 <div class="panel-actions">
-    <a href="{% url 'exercise_create' %}" class="btn-primary">+ Agregar ejercicio</a>
+    <a href="{% url 'exercise_create' %}?next={{ request.get_full_path|urlencode }}" class="btn-primary">+ Agregar ejercicio</a>
 </div>
 
 <section class="filter-bar">
@@ -78,8 +78,8 @@
                             </span>
                         </td>
                         <td class="actions">
-                            <a href="{% url 'exercise_edit' exercise.id %}" class="btn-small btn-edit">Editar</a>
-                            <a href="{% url 'exercise_delete' exercise.id %}" class="btn-small btn-delete">Eliminar</a>
+                            <a href="{% url 'exercise_edit' exercise.id %}?next={{ request.get_full_path|urlencode }}" class="btn-small btn-edit">Editar</a>
+                            <a href="{% url 'exercise_delete' exercise.id %}?next={{ request.get_full_path|urlencode }}" class="btn-small btn-delete">Eliminar</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -101,7 +101,7 @@
 {% else %}
     <section class="empty-state">
         <h2>No hay ejercicios</h2>
-        <p><a href="{% url 'exercise_create' %}">Crea el primer ejercicio</a> para empezar a llenar la wiki.</p>
+        <p><a href="{% url 'exercise_create' %}?next={{ request.get_full_path|urlencode }}">Crea el primer ejercicio</a> para empezar a llenar la wiki.</p>
     </section>
 {% endif %}
 {% endblock %}
