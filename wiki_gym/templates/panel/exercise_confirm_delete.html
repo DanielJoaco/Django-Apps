@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wiki Gym | Eliminar ejercicio{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/panel/panel.css' %}">{% endblock %}
+
+{% block content %}
+<section class="confirm-delete-layout">
+    <article class="confirm-delete-card">
+        <p class="eyebrow">Confirmación</p>
+        <h1>¿Eliminar este ejercicio?</h1>
+        <p class="confirm-text">
+            Estás a punto de eliminar el ejercicio <strong>{{ exercise.name }}</strong>.
+            Esta acción no se puede deshacer.
+        </p>
+
+        <div class="exercise-info">
+            <p><strong>Agonista:</strong> {{ exercise.agonist.name }}</p>
+            <p><strong>Grupo muscular:</strong> {{ exercise.muscle_group.name }}</p>
+            <p><strong>Tipo:</strong> {{ exercise.get_exercise_type_display }}</p>
+        </div>
+
+        <form method="post" class="confirm-form">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn-danger">Eliminar</button>
+                <a href="{% url 'panel_list' %}" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

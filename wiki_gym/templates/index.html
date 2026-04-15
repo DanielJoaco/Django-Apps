@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wiki Gym | Ejercicios{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/index.css' %}">{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Biblioteca de ejercicios</p>
+        <h1>Explora la wiki de ejercicios de gimnasio</h1>
+        <p class="hero-copy">
+            Busca por nombre, grupo muscular, agonista o patrón de movimiento.
+        </p>
+    </div>
+</section>
+
+<section class="filter-bar">
+    <a class="filter-link {% if not selected_type %}active{% endif %}" href="{% url 'index' %}">Todos</a>
+    {% for value, label in type_filters %}
+        <a class="filter-link {% if selected_type == value %}active{% endif %}" href="{% url 'search' %}?type={{ value }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+</section>
+
+{% if search_query or selected_type %}
+    <section class="results-meta">
+        <p>
+            {% if search_query %}Resultados para <strong>{{ search_query }}</strong>{% endif %}
+            {% if selected_type %}
+                {% if search_query %} · {% endif %}
+                Tipo: <strong>{{ selected_type_label }}</strong>
+            {% endif %}
+        </p>
+    </section>
+{% endif %}
+
+{% if total_exercises > 0 %}
+    <section class="exercise-grid">
+        {% for exercise in exercises %}
+            <article class="exercise-card">
+                <div class="exercise-image-wrap">
+                    {% if exercise.image %}
+                        <img src="{{ exercise.image.url }}" alt="{{ exercise.name }}">
+                    {% else %}
+                        <div class="exercise-image-placeholder">Sin imagen</div>
+                    {% endif %}
+                </div>
+
+                <div class="exercise-body">
+                    <h2>{{ exercise.name }}</h2>
+                    <p class="exercise-meta">{{ exercise.muscle_group.name }}</p>
+                    <p class="exercise-meta">{{ exercise.agonist.name }}</p>
+                    <a class="details-button" href="{% url 'excercise' %}?id={{ exercise.id }}">Ver más</a>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+
+    <nav class="pagination" aria-label="Paginación">
+        {% if page_obj.has_previous %}
+            <a href="?{% if page_query_string %}{{ page_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% endif %}
+
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if page_query_string %}{{ page_query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+        {% endif %}
+    </nav>
+{% else %}
+    <section class="empty-state">
+        <h2>Aún no hay ejercicios</h2>
+        <p>Cuando agregues ejercicios desde el panel de administración aparecerán aquí.</p>
+    </section>
+{% endif %}
+{% endblock %}

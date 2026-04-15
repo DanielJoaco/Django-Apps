@@ -1,0 +1,387 @@
+.separator {
+    color: var(--border);
+    margin: 0 0.5rem;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+    color: #08101e;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    border-color: rgba(125, 211, 252, 0.6);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--panel-soft), var(--panel));
+    color: var(--text);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    border-color: rgba(125, 211, 252, 0.45);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.3));
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.35);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    border-color: rgba(239, 68, 68, 0.6);
+}
+
+.btn-small {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.875rem;
+    background: linear-gradient(135deg, var(--panel-soft), var(--panel));
+    color: var(--text);
+    border-radius: 8px;
+}
+
+.btn-edit {
+    margin-right: 0.5rem;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.2));
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.panel-actions {
+    margin-bottom: 1.5rem;
+}
+
+.panel-header h1,
+.form-header h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+}
+
+.search-form-panel {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-form-panel input {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    outline: none;
+}
+
+.search-form-panel input:focus {
+    border-color: rgba(125, 211, 252, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.search-form-panel button {
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--panel-soft), var(--panel));
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+    margin-bottom: 1.5rem;
+}
+
+.exercises-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.exercises-table thead {
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--border);
+}
+
+.exercises-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.exercises-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text);
+}
+
+.exercises-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.exercises-table .actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.badge-strength {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+}
+
+.badge-cardio {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+.badge-full_body {
+    background: rgba(168, 85, 247, 0.15);
+    color: #d8b4fe;
+}
+
+.badge-active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+}
+
+.badge-inactive {
+    background: rgba(107, 114, 128, 0.15);
+    color: #d1d5db;
+}
+
+.form-container {
+    max-width: 720px;
+    margin: 2rem auto;
+}
+
+.exercise-form {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: rgba(125, 211, 252, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0;
+}
+
+.form-group-checkbox input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.form-group-checkbox label {
+    margin: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.field-errors {
+    margin-top: 0.4rem;
+}
+
+.error {
+    display: block;
+    color: #fca5a5;
+    font-size: 0.875rem;
+}
+
+.error-messages {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.error-message {
+    color: #fca5a5;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.help-text {
+    display: block;
+    margin-top: 0.4rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.current-image {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.current-image p {
+    margin: 0 0 0.75rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.confirm-delete-layout {
+    display: grid;
+    place-items: center;
+    min-height: calc(100vh - 300px);
+}
+
+.confirm-delete-card {
+    width: min(560px, 100%);
+    padding: 2rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    text-align: center;
+}
+
+.confirm-text {
+    color: var(--muted);
+    margin: 1rem 0;
+}
+
+.exercise-info {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.exercise-info p {
+    margin: 0.5rem 0;
+    color: var(--text);
+}
+
+.confirm-form {
+    margin-top: 2rem;
+}
+
+.confirm-form .form-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .exercises-table {
+        font-size: 0.875rem;
+    }
+
+    .exercises-table th,
+    .exercises-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-small {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.8rem;
+    }
+
+    .search-form-panel {
+        flex-direction: column;
+    }
+
+    .search-form-panel input,
+    .search-form-panel button {
+        width: 100%;
+    }
+}

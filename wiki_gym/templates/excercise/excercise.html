@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wiki Gym | {{ exercise.name }}{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/excercise/excercise.css' %}">{% endblock %}
+
+{% block content %}
+<section class="detail-layout">
+    <article class="detail-card">
+        <div class="detail-image">
+            {% if exercise.image %}
+                <img src="{{ exercise.image.url }}" alt="{{ exercise.name }}">
+            {% else %}
+                <div class="exercise-image-placeholder">Sin imagen</div>
+            {% endif %}
+        </div>
+
+        <div class="detail-info">
+            <p class="eyebrow">Detalle del ejercicio</p>
+            <h1>{{ exercise.name }}</h1>
+            <ul class="detail-list">
+                <li><strong>Patrón:</strong> {{ exercise.pattern.name }}</li>
+                <li><strong>Grupo muscular:</strong> {{ exercise.muscle_group.name }}</li>
+                <li><strong>Agonista:</strong> {{ exercise.agonist.name }}</li>
+                <li><strong>Tipo:</strong> {{ exercise.get_exercise_type_display }}</li>
+                <li><strong>Usa peso:</strong> {% if exercise.tracks_weight %}Sí{% else %}No{% endif %}</li>
+            </ul>
+
+            {% if exercise.description %}
+                <div class="detail-description">
+                    <h2>Descripción</h2>
+                    <p>{{ exercise.description }}</p>
+                </div>
+            {% endif %}
+
+            <a class="details-button" href="{% url 'index' %}">Volver al inicio</a>
+        </div>
+    </article>
+</section>
+{% endblock %}

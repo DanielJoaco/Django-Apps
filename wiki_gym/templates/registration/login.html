@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wiki Gym | Login{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/registration/login.css' %}">{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+    <article class="auth-card">
+        <p class="eyebrow">Acceso al sistema</p>
+        <h1>Iniciar sesión</h1>
+        <p class="hero-copy">Ingresa con tu usuario administrador para ver y gestionar la wiki.</p>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next|default:'' }}">
+            {{ form.non_field_errors }}
+
+            <div class="auth-field">
+                <label for="id_username">Usuario</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div class="auth-field">
+                <label for="id_password">Contraseña</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+
+            <button type="submit" class="auth-button">Entrar</button>
+        </form>
+    </article>
+</section>
+{% endblock %}

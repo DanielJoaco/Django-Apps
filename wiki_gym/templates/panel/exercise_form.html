@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wiki Gym | {% if action == 'Editar' %}Editar{% else %}Crear{% endif %} ejercicio{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/panel/panel.css' %}">{% endblock %}
+
+{% block content %}
+<section class="form-header">
+    <div>
+        <p class="eyebrow">{% if action == 'Editar' %}Editar{% else %}Crear{% endif %} ejercicio</p>
+        <h1>{{ action }} {% if not action == 'Editar' %}nuevo{% endif %} ejercicio</h1>
+    </div>
+</section>
+
+<div class="form-container">
+    <form method="post" enctype="multipart/form-data" class="exercise-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-messages">
+                {% for error in form.non_field_errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="field-errors">
+                    {% for error in form.name.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.agonist.id_for_label }}">{{ form.agonist.label }}</label>
+            {{ form.agonist }}
+            {% if form.agonist.errors %}
+                <div class="field-errors">
+                    {% for error in form.agonist.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <small class="help-text">El patrón y grupo muscular se completan automáticamente según el agonista.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="field-errors">
+                    {% for error in form.description.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+            {{ form.image }}
+            {% if form.image.errors %}
+                <div class="field-errors">
+                    {% for error in form.image.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.instance.image %}
+                <div class="current-image">
+                    <p>Imagen actual:</p>
+                    <img src="{{ form.instance.image.url }}" alt="{{ form.instance.name }}" style="max-width: 200px;">
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.exercise_type.id_for_label }}">{{ form.exercise_type.label }}</label>
+                {{ form.exercise_type }}
+                {% if form.exercise_type.errors %}
+                    <div class="field-errors">
+                        {% for error in form.exercise_type.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group form-group-checkbox">
+                {{ form.tracks_weight }}
+                <label for="{{ form.tracks_weight.id_for_label }}">{{ form.tracks_weight.label }}</label>
+            </div>
+
+            <div class="form-group form-group-checkbox">
+                {{ form.is_active }}
+                <label for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">{{ action }}</button>
+            <a href="{% url 'panel_list' %}" class="btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
