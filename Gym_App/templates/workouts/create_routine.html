@@ -45,9 +45,11 @@
                 <label>Buscar Ejercicios en la Base de Datos Global:</label>
                 <div class="search-input-group">
                     <input type="text" id="exercise-search" placeholder="Ej. Press de banca..." autocomplete="off" class="form-control">
-                    <button type="button" id="btn-new-exercise" class="interactive-button">
-                        Crear Nuevo Ejercicio
-                    </button>
+                    {% if can_create_exercise %}
+                        <button type="button" id="btn-new-exercise" class="interactive-button">
+                            Crear Nuevo Ejercicio
+                        </button>
+                    {% endif %}
                 </div>
                 <div id="search-results"></div>
             </div>
@@ -62,49 +64,51 @@
     </form>
 </section>
 
-<div id="exercise-modal" class="custom-modal">
-    <div class="modal-content">
-        <span class="close-button" id="close-modal">&times;</span>
-        
-        <div class="title-header">
-            <h2>Aportar Nuevo Ejercicio</h2>
+{% if can_create_exercise %}
+    <div id="exercise-modal" class="custom-modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-modal">&times;</span>
+            
+            <div class="title-header">
+                <h2>Aportar Nuevo Ejercicio</h2>
+            </div>
+
+            <p class="text-instruction">
+                Este ejercicio se añadirá al catálogo global. Por favor, selecciona el grupo muscular correcto.
+            </p>
+
+            <form id="async-exercise-form" data-url="{% url 'workouts:api_create_exercise' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>Grupo Muscular (Obligatorio):</label>
+                    {{ exercise_form.muscle_group }}
+                </div>
+
+                <p id="exercise-type-hint" class="text-instruction"></p>
+                
+                <div class="form-group">
+                    <label>Nombre del Ejercicio:</label>
+                    {{ exercise_form.name }}
+                </div>
+                
+                <div class="form-group">
+                    <label>URL de Imagen Demostrativa (Opcional):</label>
+                    {{ exercise_form.image }}
+                </div>
+                
+                <div id="tracks-weight-container" class="form-group-inline checkbox-container">
+                    {{ exercise_form.tracks_weight }}
+                    <label id="tracks-weight-label" class="label-light">Este ejercicio requiere registrar peso levantado</label>
+                </div>
+                
+                <div class="modal-actions-container">
+                    <button type="submit" class="success-button">Guardar y Añadir a Rutina</button>
+                </div>
+            </form>
         </div>
-
-        <p class="text-instruction">
-            Este ejercicio se añadirá al catálogo global. Por favor, selecciona el grupo muscular correcto.
-        </p>
-
-        <form id="async-exercise-form" data-url="{% url 'workouts:api_create_exercise' %}">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label>Grupo Muscular (Obligatorio):</label>
-                {{ exercise_form.muscle_group }}
-            </div>
-
-            <p id="exercise-type-hint" class="text-instruction"></p>
-            
-            <div class="form-group">
-                <label>Nombre del Ejercicio:</label>
-                {{ exercise_form.name }}
-            </div>
-            
-            <div class="form-group">
-                <label>URL de Imagen Demostrativa (Opcional):</label>
-                {{ exercise_form.image }}
-            </div>
-            
-            <div id="tracks-weight-container" class="form-group-inline checkbox-container">
-                {{ exercise_form.tracks_weight }}
-                <label id="tracks-weight-label" class="label-light">Este ejercicio requiere registrar peso levantado</label>
-            </div>
-            
-            <div class="modal-actions-container">
-                <button type="submit" class="success-button">Guardar y Añadir a Rutina</button>
-            </div>
-        </form>
     </div>
-</div>
+{% endif %}
 
 {{ initial_exercises|json_script:'initial-routine-items' }}
 {% endblock %}

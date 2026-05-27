@@ -4,6 +4,7 @@ from . import views
 app_name = 'workouts'
 
 urlpatterns = [
+    path('admin-panel/', views.admin_panel_view, name='admin_panel'),
     # Rutas para gestión de rutinas
     path('routines/', views.routines_view, name='routines'),
     path('routines/create/', views.create_routine_view, name='create_routine'),

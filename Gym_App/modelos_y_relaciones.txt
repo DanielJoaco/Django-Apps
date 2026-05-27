@@ -1,0 +1,65 @@
+Analisis de modelos y relaciones (Django)
+
+Aplicacion: workouts
+
+Entidad: MovementPattern
+- Campos: name (CharField, unique)
+- Relaciones: ninguna
+
+Entidad: MuscleGroup
+- Campos: name (CharField, unique)
+- Relaciones:
+  - pattern -> MovementPattern (ForeignKey)
+
+Entidad: Exercise
+- Campos: name (CharField, unique), description (TextField), image (URLField),
+  exercise_type (CharField), tracks_weight (BooleanField), is_active (BooleanField),
+  created_at (DateTimeField)
+- Relaciones:
+  - created_by -> User (ForeignKey, null, blank)
+  - muscle_group -> MuscleGroup (ForeignKey)
+
+Entidad: Routine
+- Campos: name (CharField), is_public (BooleanField), created_at (DateTimeField)
+- Relaciones:
+  - user -> User (ForeignKey)
+
+Entidad: RoutineItem
+- Campos: recommended_sets (PositiveIntegerField), recommended_reps (PositiveIntegerField), order (PositiveIntegerField)
+- Relaciones:
+  - routine -> Routine (ForeignKey)
+  - exercise -> Exercise (ForeignKey)
+
+Entidad: WorkoutSession
+- Campos: started_at (DateTimeField), ended_at (DateTimeField), notes (TextField)
+- Relaciones:
+  - user -> User (ForeignKey)
+
+Entidad: SessionExerciseEntry
+- Campos: phase (CharField), entry_type (CharField), order (PositiveIntegerField), created_at (DateTimeField)
+- Relaciones:
+  - session -> WorkoutSession (ForeignKey)
+  - exercise -> Exercise (ForeignKey)
+
+Entidad: StrengthSetEntry
+- Campos: set_number (PositiveIntegerField), reps_done (PositiveIntegerField),
+  weight_lifted (DecimalField), weight_unit (CharField)
+- Relaciones:
+  - entry -> SessionExerciseEntry (ForeignKey)
+
+Entidad: CardioEntry
+- Campos: duration_seconds (PositiveIntegerField), distance_value (DecimalField), distance_unit (CharField)
+- Relaciones:
+  - entry -> SessionExerciseEntry (OneToOne)
+
+Entidad: FullBodyEntry
+- Campos: tracking_mode (CharField), duration_seconds (PositiveIntegerField),
+  sets_done (PositiveIntegerField), reps_done (PositiveIntegerField)
+- Relaciones:
+  - entry -> SessionExerciseEntry (OneToOne)
+
+Aplicacion: users
+- No se definen modelos en models.py
+
+Aplicacion: measurements
+- No se definen modelos en models.py

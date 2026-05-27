@@ -1,0 +1,122 @@
+@startuml
+title Gym App - Diagrama Entidad-Relacion
+skinparam shadowing false
+hide methods
+hide circle
+
+entity "MovementPattern" as MovementPattern {
+  * id : int
+  --
+  name : string
+}
+
+entity "MuscleGroup" as MuscleGroup {
+  * id : int
+  --
+  name : string
+  pattern_id : int
+}
+
+entity "Exercise" as Exercise {
+  * id : int
+  --
+  name : string
+  description : text
+  image : url
+  exercise_type : string
+  tracks_weight : bool
+  is_active : bool
+  created_at : datetime
+  muscle_group_id : int
+  created_by_id : int
+}
+
+entity "Routine" as Routine {
+  * id : int
+  --
+  name : string
+  is_public : bool
+  created_at : datetime
+  user_id : int
+}
+
+entity "RoutineItem" as RoutineItem {
+  * id : int
+  --
+  recommended_sets : int
+  recommended_reps : int
+  order : int
+  routine_id : int
+  exercise_id : int
+}
+
+entity "WorkoutSession" as WorkoutSession {
+  * id : int
+  --
+  started_at : datetime
+  ended_at : datetime
+  notes : text
+  user_id : int
+}
+
+entity "SessionExerciseEntry" as SessionExerciseEntry {
+  * id : int
+  --
+  phase : string
+  entry_type : string
+  order : int
+  created_at : datetime
+  session_id : int
+  exercise_id : int
+}
+
+entity "StrengthSetEntry" as StrengthSetEntry {
+  * id : int
+  --
+  set_number : int
+  reps_done : int
+  weight_lifted : decimal
+  weight_unit : string
+  entry_id : int
+}
+
+entity "CardioEntry" as CardioEntry {
+  * id : int
+  --
+  duration_seconds : int
+  distance_value : decimal
+  distance_unit : string
+  entry_id : int
+}
+
+entity "FullBodyEntry" as FullBodyEntry {
+  * id : int
+  --
+  tracking_mode : string
+  duration_seconds : int
+  sets_done : int
+  reps_done : int
+  entry_id : int
+}
+
+entity "User" as User {
+  * id : int
+  --
+  username : string
+  email : string
+  is_staff : bool
+}
+
+MovementPattern ||--o{ MuscleGroup : pattern
+MuscleGroup ||--o{ Exercise : muscle_group
+User ||--o{ Exercise : created_by
+User ||--o{ Routine : user
+Routine ||--o{ RoutineItem : routine
+Exercise ||--o{ RoutineItem : exercise
+User ||--o{ WorkoutSession : user
+WorkoutSession ||--o{ SessionExerciseEntry : session
+Exercise ||--o{ SessionExerciseEntry : exercise
+SessionExerciseEntry ||--o{ StrengthSetEntry : entry
+SessionExerciseEntry ||--|| CardioEntry : entry
+SessionExerciseEntry ||--|| FullBodyEntry : entry
+@enduml

@@ -4,8 +4,9 @@ import unicodedata
 from collections import OrderedDict
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Prefetch
 from django.db.models.functions import Lower
@@ -121,18 +122,18 @@ def create_routine_view(request):
         'submit_label': 'Guardar Rutina Completa',
         'routine_form': routine_form,
         'exercise_form': exercise_form,
-        'initial_exercises': []
+        'initial_exercises': [],
+        'can_create_exercise': request.user.is_staff
     })
 
 
 @login_required
 def edit_routine_view(request, routine_id):
     """Vista para editar una rutina existente del usuario."""
-    routine = get_object_or_404(
-        Routine.objects.prefetch_related('items__exercise__muscle_group'),
-        id=routine_id,
-        user=request.user
-    )
+    routines_queryset = Routine.objects.prefetch_related('items__exercise__muscle_group')
+    if not request.user.is_staff:
+        routines_queryset = routines_queryset.filter(user=request.user)
+    routine = get_object_or_404(routines_queryset, id=routine_id)
     exercise_form = ExerciseAsyncForm()
 
     if request.method == 'POST':
@@ -163,7 +164,8 @@ def edit_routine_view(request, routine_id):
         'submit_label': 'Guardar Cambios',
         'routine_form': routine_form,
         'exercise_form': exercise_form,
-        'initial_exercises': initial_exercises
+        'initial_exercises': initial_exercises,
+        'can_create_exercise': request.user.is_staff
     })
 
 @login_required
@@ -193,6 +195,11 @@ def search_exercises_api(request):
 @login_required
 def create_exercise_api(request):
     """Endpoint asíncrono para crear un nuevo ejercicio en el catálogo global."""
+    if not request.user.is_staff:
+        return JsonResponse({
+            'success': False,
+            'message': 'Solo administradores pueden crear nuevos ejercicios.'
+        }, status=403)
     if request.method == 'POST':
         form = ExerciseAsyncForm(request.POST)
         if form.is_valid():
@@ -393,11 +400,103 @@ def routines_view(request):
 def delete_routine_view(request, routine_id):
     """Vista para eliminar una rutina específica del usuario."""
     try:
-        routine = Routine.objects.get(id=routine_id, user=request.user)
+        if request.user.is_staff:
+            routine = Routine.objects.get(id=routine_id)
+        else:
+            routine = Routine.objects.get(id=routine_id, user=request.user)
         routine.delete()
         return redirect('workouts:routines')
     except Routine.DoesNotExist:
         return redirect('workouts:routines')
+
+
+@login_required
+def admin_panel_view(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden('No tienes permiso para acceder a esta vista.')
+
+    create_error = None
+    create_success = None
+
+    if request.method == 'POST':
+        action = (request.POST.get('action') or '').strip().lower()
+        if action == 'create_user':
+            username = (request.POST.get('username') or '').strip()
+            email = (request.POST.get('email') or '').strip()
+            password = request.POST.get('password') or ''
+            make_admin = bool(request.POST.get('is_admin'))
+
+            if not username or not password:
+                create_error = 'El usuario y la contraseña son obligatorios.'
+            elif User.objects.filter(username__iexact=username).exists():
+                create_error = 'Ya existe un usuario con ese nombre.'
+            else:
+                new_user = User.objects.create_user(
+                    username=username,
+                    email=email or None,
+                    password=password,
+                )
+                new_user.is_staff = make_admin
+                new_user.is_superuser = make_admin
+                new_user.save()
+                create_success = f'Usuario "{username}" creado correctamente.'
+
+    users_queryset = (
+        User.objects
+        .prefetch_related('routine_set', 'workout_sessions')
+        .order_by('username')
+    )
+
+    session_entries_queryset = (
+        SessionExerciseEntry.objects
+        .select_related('exercise', 'exercise__muscle_group', 'cardio_data', 'full_body_data')
+        .prefetch_related('strength_sets')
+        .order_by('phase', 'order', 'id')
+    )
+
+    user_rows = []
+    for user_item in users_queryset:
+        routines = (
+            Routine.objects
+            .filter(user=user_item)
+            .prefetch_related('items__exercise')
+            .order_by(Lower('name'))
+        )
+
+        sessions_queryset = (
+            WorkoutSession.objects
+            .filter(user=user_item)
+            .prefetch_related(Prefetch('entries', queryset=session_entries_queryset))
+            .order_by('-started_at', '-id')
+        )
+
+        session_rows = [_build_session_detail_payload(session) for session in sessions_queryset]
+
+        routine_rows = []
+        for routine in routines:
+            routine_rows.append({
+                'id': routine.id,
+                'name': routine.name,
+                'is_public': routine.is_public,
+                'items_count': routine.items.count(),
+            })
+
+        user_rows.append({
+            'id': user_item.id,
+            'username': user_item.username,
+            'email': user_item.email or 'Sin correo',
+            'is_staff': user_item.is_staff,
+            'routines': routine_rows,
+            'sessions': session_rows,
+        })
+
+    return render(request, 'workouts/admin_panel.html', {
+        'user_rows': user_rows,
+        'create_error': create_error,
+        'create_success': create_success,
+        'hour_options': range(1, 13),
+        'minute_options': range(0, 60),
+    })
 
 @login_required
 def records_view(request):

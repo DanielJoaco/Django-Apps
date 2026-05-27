@@ -41,6 +41,9 @@
                                 <li><a href="{% url 'workouts:add_record' %}">Nuevo registro</a></li>
                             </ul>
                         </li>
+                        {% if user.is_staff %}
+                            <li><a id="admin-panel-link-mobile" href="{% url 'workouts:admin_panel' %}">Admin</a></li>
+                        {% endif %}
                         <li><a id="weight-link-mobile" href="#">Masa</a></li>
                     </ul>
                 </div>
@@ -83,6 +86,9 @@
                                 <li><a href="{% url 'workouts:add_record' %}">Nuevo registro</a></li>
                             </ul>
                         </li>
+                        {% if user.is_staff %}
+                            <li><a id="admin-panel-link" href="{% url 'workouts:admin_panel' %}">Admin</a></li>
+                        {% endif %}
                         <li><a id="weight-link" href="#">Masa</a></li>
                     </div>                
                 </ul>

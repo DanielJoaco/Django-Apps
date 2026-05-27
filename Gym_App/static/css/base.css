@@ -426,6 +426,12 @@ button {
     margin-top: 2rem;
 }
 
+.text-success {
+    color: var(--text-success);
+    font-size: 1.4rem;
+    margin-top: 2rem;
+}
+
 .close-button {
     color: var(--text-muted);
     position: absolute;

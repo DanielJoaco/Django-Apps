@@ -1,0 +1,5 @@
+Objetivo del desarrollo (<=200 caracteres):
+Sistema web para planificar rutinas y registrar sesiones de entrenamiento, con historial y control de ejercicios para mejorar el seguimiento personal.
+
+Arquitectura:
+Aplicacion Django con patron MVT. MPA con templates renderizados en el servidor (Django Templates), vistas con login requerido, modelos en apps (workouts/users) y archivos static para CSS/JS. Base de datos relacional (SQLite local, PostgreSQL via URL en despliegue).

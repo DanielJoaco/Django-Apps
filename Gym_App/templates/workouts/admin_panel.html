@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel Admin - Gym App{% endblock %}
+
+{% block logo_title %}Panel Admin{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/workouts/admin_panel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-panel-container">
+    <div class="title-header">
+        <h2>Panel de Administracion</h2>
+    </div>
+
+    <article class="admin-card admin-create-user">
+        <div class="title-header">
+            <h3>Crear Usuario</h3>
+        </div>
+
+        {% if create_success %}
+            <p class="text-success">{{ create_success }}</p>
+        {% endif %}
+        {% if create_error %}
+            <p class="text-warning">{{ create_error }}</p>
+        {% endif %}
+
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_user">
+            <div class="form-group">
+                <label for="id_admin_username">Usuario</label>
+                <input id="id_admin_username" name="username" type="text" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="id_admin_email">Correo (opcional)</label>
+                <input id="id_admin_email" name="email" type="email" class="form-control" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="id_admin_password">Password</label>
+                <input id="id_admin_password" name="password" type="password" class="form-control" required>
+            </div>
+            <div class="form-group-inline checkbox-container">
+                <input id="id_admin_is_admin" name="is_admin" type="checkbox" class="form-check-input">
+                <label for="id_admin_is_admin" class="label-light">Crear como administrador</label>
+            </div>
+            <button type="submit" class="success-button">Crear Usuario</button>
+        </form>
+    </article>
+
+    <article class="admin-card admin-users">
+        <div class="title-header">
+            <h3>Usuarios del Sistema</h3>
+        </div>
+        <p class="text-instruction">Usa los botones de editar para modificar rutinas o sesiones en el panel admin nativo.</p>
+
+        {% if user_rows %}
+            <div class="admin-user-list">
+                {% for user_item in user_rows %}
+                    <div class="admin-user-card">
+                        <div class="admin-user-header">
+                            <div>
+                                <h3>{{ user_item.username }}</h3>
+                                <p>{{ user_item.email }}</p>
+                            </div>
+                            <span class="admin-role">
+                                {% if user_item.is_staff %}Admin{% else %}Usuario{% endif %}
+                            </span>
+                        </div>
+
+                        <div class="admin-user-section">
+                            <h4>Rutinas</h4>
+                            {% if user_item.routines %}
+                                <ul class="admin-list">
+                                    {% for routine in user_item.routines %}
+                                        <li class="admin-list-item">
+                                            <div>
+                                                <strong>{{ routine.name }}</strong>
+                                                <p>{{ routine.items_count }} ejercicios{% if routine.is_public %} · Publica{% else %} · Privada{% endif %}</p>
+                                            </div>
+                                            <div class="admin-actions">
+                                                <button type="button" class="interactive-button" onclick="window.location.href='{% url 'workouts:edit_routine' routine.id %}'">
+                                                    Editar
+                                                </button>
+                                                <button type="button" class="interactive-button" onclick="window.location.href='/admin/workouts/routine/{{ routine.id }}/change/'">
+                                                    Editar en admin
+                                                </button>
+                                                <button type="button" class="warning-button" onclick="window.location.href='{% url 'workouts:delete_routine' routine.id %}'">
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-instruction">Este usuario no tiene rutinas registradas.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="admin-user-section">
+                            <h4>Sesiones de entrenamiento</h4>
+                            {% if user_item.sessions %}
+                                <ul class="admin-list">
+                                    {% for session in user_item.sessions %}
+                                        <li class="admin-list-item">
+                                            <div>
+                                                <strong>Sesion {{ session.date_display }}</strong>
+                                                <p>Duracion: {{ session.duration_display }}</p>
+                                            </div>
+                                            <div class="admin-actions">
+                                                <button class="interactive-button" type="button" onclick="openModal('session-modal-{{ session.id }}')">
+                                                    Ver
+                                                </button>
+                                                <button class="interactive-button" type="button" onclick="window.location.href='/admin/workouts/workoutsession/{{ session.id }}/change/'">
+                                                    Editar en admin
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                {% for session in user_item.sessions %}
+                                    {% include 'workouts/modal_view_session.html' with session=session %}
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-instruction">Este usuario no tiene sesiones registradas.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No hay usuarios disponibles.</p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/workouts/modal_view_routine.js' %}"></script>
+    <script src="{% static 'js/workouts/records.js' %}"></script>
+{% endblock %}

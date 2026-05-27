@@ -1,0 +1,123 @@
+@startuml
+title Gym App - Dashboard
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam noteBorderColor #999999
+
+rectangle "Dashboard" {
+  rectangle "Header/Nav" {
+    [Logo Gym App] -right- [Dashboard] -right- [Rutinas] -right- [Registros] -right- [Masa] -right- [Cerrar Sesion]
+  }
+
+  rectangle "Mis sesiones" {
+    [Lista de sesiones recientes]
+    [Tarjeta sesion: fecha + tiempo + total ejercicios + boton Ver mas]
+  }
+
+  rectangle "Acciones rapidas" {
+    [Crear Nueva Rutina]
+    [Ver Todas las Rutinas]
+    [Ver Mi Diario de Ejercicios]
+    [Iniciar Sesion de Entrenamiento]
+  }
+}
+@enduml
+
+@startuml
+title Gym App - Login
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+
+rectangle "Login" {
+  [Acceso al Sistema]
+  [Usuario]
+  [Password]
+  [Iniciar Sesion]
+}
+@enduml
+
+@startuml
+title Gym App - Rutinas
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+
+rectangle "Rutinas" {
+  rectangle "Header/Nav" {
+    [Logo] -right- [Rutinas] -right- [Registros] -right- [Masa] -right- [Cerrar Sesion]
+  }
+
+  rectangle "Mis Rutinas" {
+    [Lista de rutinas]
+    [Rutina: nombre + lista ejercicios + boton Ver Detalles]
+  }
+
+  [Crear Nueva Rutina]
+}
+@enduml
+
+@startuml
+title Gym App - Crear o Editar Rutina
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+
+rectangle "Crear Rutina" {
+  [Nombre de la Rutina]
+  [Checkbox: Hacer publica]
+  [Buscar ejercicios + Crear nuevo ejercicio]
+  [Lista de ejercicios seleccionados]
+  [Guardar Rutina Completa]
+
+  rectangle "Modal Nuevo Ejercicio" {
+    [Grupo muscular]
+    [Nombre ejercicio]
+    [URL imagen]
+    [Checkbox: registra peso]
+    [Guardar y Anadir]
+  }
+}
+@enduml
+
+@startuml
+title Gym App - Registros
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+
+rectangle "Registros" {
+  [Mis sesiones]
+  [Lista de sesiones + boton Ver mas]
+  [Anadir Nuevo Registro]
+}
+@enduml
+
+@startuml
+title Gym App - Nueva Sesion de Entrenamiento
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+
+rectangle "Nueva Sesion" {
+  rectangle "Datos basicos" {
+    [Fecha]
+    [Hora inicio]
+    [Hora fin]
+  }
+
+  rectangle "Ejercicios" {
+    [Agregar desde rutina]
+    [Agregar manual]
+    [Lista ejercicios seleccionados]
+  }
+
+  rectangle "Calentamiento (opcional)" {
+    [Cardio]
+    [Estiramiento]
+  }
+
+  rectangle "Cardio final y estiramiento (opcional)" {
+    [Cardio]
+    [Estiramiento]
+  }
+
+  [Guardar Registro]
+  [Descartar sesion]
+}
+@enduml

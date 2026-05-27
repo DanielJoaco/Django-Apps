@@ -103,15 +103,19 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // Controladores de estado visual
-  btnNewExercise.onclick = () => {
-    modal.style.display = "flex";
-    updateExerciseTypeUiState();
-  };
-  btnCloseModal.onclick = () => {
-    modal.style.display = "none";
-    asyncForm.reset();
-    updateExerciseTypeUiState();
-  };
+  if (btnNewExercise && modal) {
+    btnNewExercise.onclick = () => {
+      modal.style.display = "flex";
+      updateExerciseTypeUiState();
+    };
+  }
+  if (btnCloseModal && modal && asyncForm) {
+    btnCloseModal.onclick = () => {
+      modal.style.display = "none";
+      asyncForm.reset();
+      updateExerciseTypeUiState();
+    };
+  }
 
   muscleGroupSelect?.addEventListener("change", updateExerciseTypeUiState);
 
@@ -223,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Intercepción de la sumisión para el formulario de Nuevo Ejercicio
-  asyncForm.addEventListener("submit", function (e) {
+  asyncForm?.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const formElement = e.target;
