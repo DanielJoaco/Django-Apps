@@ -1,123 +1,113 @@
-@startuml
-title Gym App - Dashboard
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-skinparam noteBorderColor #999999
+@startsalt
+{
+{T Gym App - Dashboard}
 
-rectangle "Dashboard" {
-  rectangle "Header/Nav" {
-    [Logo Gym App] -right- [Dashboard] -right- [Rutinas] -right- [Registros] -right- [Masa] -right- [Cerrar Sesion]
-  }
-
-  rectangle "Mis sesiones" {
-    [Lista de sesiones recientes]
-    [Tarjeta sesion: fecha + tiempo + total ejercicios + boton Ver mas]
-  }
-
-  rectangle "Acciones rapidas" {
-    [Crear Nueva Rutina]
-    [Ver Todas las Rutinas]
-    [Ver Mi Diario de Ejercicios]
-    [Iniciar Sesion de Entrenamiento]
-  }
+{+ Header/Nav
+[/ Logo Gym App | Dashboard | Rutinas | Registros | Masa | Cerrar Sesion ]
 }
-@enduml
 
-@startuml
-title Gym App - Login
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-
-rectangle "Login" {
-  [Acceso al Sistema]
-  [Usuario]
-  [Password]
-  [Iniciar Sesion]
+{+ Mis sesiones
+[ Lista de sesiones recientes ]
+[ Tarjeta sesion: fecha + tiempo + total ejercicios + boton Ver mas ]
 }
-@enduml
 
-@startuml
-title Gym App - Rutinas
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-
-rectangle "Rutinas" {
-  rectangle "Header/Nav" {
-    [Logo] -right- [Rutinas] -right- [Registros] -right- [Masa] -right- [Cerrar Sesion]
-  }
-
-  rectangle "Mis Rutinas" {
-    [Lista de rutinas]
-    [Rutina: nombre + lista ejercicios + boton Ver Detalles]
-  }
-
-  [Crear Nueva Rutina]
+{+ Acciones rapidas
+[ Crear Nueva Rutina ]
+[ Ver Todas las Rutinas ]
+[ Ver Mi Diario de Ejercicios ]
+[ Iniciar Sesion de Entrenamiento ]
 }
-@enduml
-
-@startuml
-title Gym App - Crear o Editar Rutina
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-
-rectangle "Crear Rutina" {
-  [Nombre de la Rutina]
-  [Checkbox: Hacer publica]
-  [Buscar ejercicios + Crear nuevo ejercicio]
-  [Lista de ejercicios seleccionados]
-  [Guardar Rutina Completa]
-
-  rectangle "Modal Nuevo Ejercicio" {
-    [Grupo muscular]
-    [Nombre ejercicio]
-    [URL imagen]
-    [Checkbox: registra peso]
-    [Guardar y Anadir]
-  }
 }
-@enduml
+@endsalt
 
-@startuml
-title Gym App - Registros
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-
-rectangle "Registros" {
-  [Mis sesiones]
-  [Lista de sesiones + boton Ver mas]
-  [Anadir Nuevo Registro]
+@startsalt
+{
+{T Gym App - Login}
+[ Acceso al Sistema ]
+{+
+Usuario      | ""
+Password     | ""
 }
-@enduml
-
-@startuml
-title Gym App - Nueva Sesion de Entrenamiento
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-
-rectangle "Nueva Sesion" {
-  rectangle "Datos basicos" {
-    [Fecha]
-    [Hora inicio]
-    [Hora fin]
-  }
-
-  rectangle "Ejercicios" {
-    [Agregar desde rutina]
-    [Agregar manual]
-    [Lista ejercicios seleccionados]
-  }
-
-  rectangle "Calentamiento (opcional)" {
-    [Cardio]
-    [Estiramiento]
-  }
-
-  rectangle "Cardio final y estiramiento (opcional)" {
-    [Cardio]
-    [Estiramiento]
-  }
-
-  [Guardar Registro]
-  [Descartar sesion]
+[ Iniciar Sesion ]
 }
-@enduml
+@endsalt
+
+@startsalt
+{
+{T Gym App - Rutinas}
+
+{+ Header/Nav
+[/ Logo | Rutinas | Registros | Masa | Cerrar Sesion ]
+}
+
+{+ Mis Rutinas
+[ Lista de rutinas ]
+[ Rutina: nombre + lista ejercicios + boton Ver Detalles ]
+}
+
+[ Crear Nueva Rutina ]
+}
+@endsalt
+
+@startsalt
+{
+{T Gym App - Crear o Editar Rutina}
+
+{+
+Nombre de la Rutina                   | ""
+Hacer publica                         | [X]
+Buscar ejercicios / Crear ejercicio   | ""
+}
+
+[ Lista de ejercicios seleccionados ]
+[ Guardar Rutina Completa ]
+
+{+ Modal Nuevo Ejercicio
+Grupo muscular        | ""
+Nombre ejercicio      | ""
+URL imagen            | ""
+Registra peso         | [X]
+[ Guardar y Anadir ]
+}
+}
+@endsalt
+
+@startsalt
+{
+{T Gym App - Registros}
+[ Mis sesiones ]
+[ Lista de sesiones + boton Ver mas ]
+[ Anadir Nuevo Registro ]
+}
+@endsalt
+
+@startsalt
+{
+{T Gym App - Nueva Sesion de Entrenamiento}
+
+{+ Datos basicos
+Fecha        | ""
+Hora inicio  | ""
+Hora fin     | ""
+}
+
+{+ Ejercicios
+[ Agregar desde rutina ]
+[ Agregar manual ]
+[ Lista ejercicios seleccionados ]
+}
+
+{+ Calentamiento (opcional)
+[ Cardio ]
+[ Estiramiento ]
+}
+
+{+ Cardio final y estiramiento (opcional)
+[ Cardio ]
+[ Estiramiento ]
+}
+
+[ Guardar Registro ]
+[ Descartar sesion ]
+}
+@endsalt
